@@ -91,14 +91,6 @@
   const stars = document.querySelectorAll('.star');
   let selectedRating = 0;
 
-<div id="ratingStars">
-  <span class="star" data-value="1">★</span>
-  <span class="star" data-value="2">★</span>
-  <span class="star" data-value="3">★</span>
-  <span class="star" data-value="4">★</span>
-  <span class="star" data-value="5">★</span>
-</div>
-
   // 📩 Enviar valoración
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -168,7 +160,7 @@
 </script>
 
 <body>
-
+  
     <div class="container">
         <header>
             <div class="menu-icon" id="menu-icon">   <!-- Icono del menú hamburguesa (a la izquierda) -->
@@ -293,24 +285,33 @@
   <h2>Valoraciones</h2>
   <div class="container">
     <h3>Deja tu valoración</h3>
+
     <form id="ratingForm">
-      <label for="name">Tu nombre:</label>
-      <input type="text" id="name" required><br><br>
+      <div class="form-group">
+        <label for="name">Tu nombre:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
 
-      <label>Valoración:</label>
-      <div class="stars" id="ratingStars">
-        <span class="star" data-value="1">&#9733;</span>
-        <span class="star" data-value="2">&#9733;</span>
-        <span class="star" data-value="3">&#9733;</span>
-        <span class="star" data-value="4">&#9733;</span>
-        <span class="star" data-value="5">&#9733;</span>
-      </div><br>
+      <div class="form-group">
+        <label>Valoración:</label>
+        <div class="stars" id="ratingStars">
+          <span class="star" data-value="1">&#9733;</span>
+          <span class="star" data-value="2">&#9733;</span>
+          <span class="star" data-value="3">&#9733;</span>
+          <span class="star" data-value="4">&#9733;</span>
+          <span class="star" data-value="5">&#9733;</span>
+        </div>
+      </div>
 
-      <label for="comment">Comentario (opcional):</label>
-      <textarea id="comment"></textarea><br><br>
+      <div class="form-group">
+        <label for="comment">Comentario (opcional):</label>
+        <textarea id="comment" name="comment" rows="4"></textarea>
+      </div>
 
-      <label for="photo">Subir Foto (opcional):</label>
-      <input type="file" id="photo"><br><br>
+      <div class="form-group">
+        <label for="photo">Subir foto (opcional):</label>
+        <input type="file" id="photo" name="photo" accept="image/*">
+      </div>
 
       <button type="submit">Enviar valoración</button>
     </form>
@@ -319,6 +320,7 @@
     <div id="reviews"></div>
   </div>
 </section>
+
       
  <!-- Sección de contacto -->
     <section id="contacto" class="work-section section-5">
@@ -384,6 +386,7 @@
 
 </body>
 </html>
+
 
 
 
