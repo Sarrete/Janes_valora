@@ -385,6 +385,18 @@ element.style {
     border-radius: 5px;
 }
 
+.star {
+  cursor: pointer;
+  font-size: 2rem;
+  color: #ccc;
+  transition: color 0.2s ease;
+}
+
+.star.hover,
+.star.selected {
+  color: gold;
+}
+
 /* Estilos generales para el contenedor del mapa */
 .map-container {
     width: 100%; /* Asegura que el contenedor ocupe todo el ancho disponible */
@@ -690,3 +702,4 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
