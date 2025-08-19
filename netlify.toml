@@ -49,3 +49,4 @@
     sitemapPath = "/sitemap.xml"
     ignorePeriod = 3600 # 1 hora
     providers = [ "google", "yandex" ]
+
