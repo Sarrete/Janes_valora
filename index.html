@@ -189,6 +189,38 @@
     </section>
 
       <!-- Sección de Valoraciones -->
+      <!-- FORMULARIO DE VALORACIONES -->
+<form id="ratingForm" class="rating-form">
+  <h2>Deja tu valoración</h2>
+
+  <label for="name">Nombre:</label>
+  <input type="text" id="name" name="name" required>
+
+  <label>Valoración:</label>
+  <div id="ratingStars" class="stars">
+    <span class="star">★</span>
+    <span class="star">★</span>
+    <span class="star">★</span>
+    <span class="star">★</span>
+    <span class="star">★</span>
+  </div>
+
+  <label for="comment">Comentario:</label>
+  <textarea id="comment" name="comment" rows="3"></textarea>
+
+  <label for="photo">Foto (opcional):</label>
+  <input type="file" id="photo" name="photo" accept="image/*">
+
+  <button type="submit">Enviar valoración</button>
+</form>
+
+<hr>
+
+<!-- CONTENEDOR DE RESEÑAS -->
+<section id="reviews" class="reviews-list">
+  <!-- Aquí se insertan en tiempo real las reseñas aprobadas -->
+</section>
+
 <section id="valoracion" class="work-section section-4">
   <h2>Valoraciones</h2>
   <div class="container">
@@ -388,6 +420,7 @@
   
 </body>
 </html>
+
 
 
 
