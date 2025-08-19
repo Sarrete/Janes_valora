@@ -1,3 +1,4 @@
+# --- Redirecciones (ajusta si quieres conservar las de prod) ---
 [[redirects]]
   from = "http://*"
   to = "https://:splat"
@@ -5,25 +6,46 @@
   force = true
 
 [[redirects]]
-  from = "https://www.janesenginyeria.netlify.app/*"
-  to = "https://janesenginyeria.netlify.app/:splat"
+  from = "https://www.clever-malabi-a1eea4.netlify.app/*"
+  to = "https://clever-malabi-a1eea4.netlify.app/:splat"
   status = 301
   force = true
 
+# --- Cabeceras: HTML y rutas generales ---
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=300, must-revalidate"
+    Vary = "Accept-Encoding"
+    X-Content-Type-Options = "nosniff"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+
+# --- Cabeceras: recursos estáticos versionados ---
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Vary = "Accept-Encoding"
+
+# --- Cabeceras: imágenes y multimedia ---
+[[headers]]
+  for = "/multimedia/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+    Vary = "Accept-Encoding"
+
+# --- Cabeceras: sitemap ---
 [[headers]]
   for = "/sitemap.xml"
   [headers.values]
     Content-Type = "application/xml"
     Vary = "Accept-Encoding"
 
+# --- Plugins (ajusta baseUrl a tu clon si quieres que envíe ese sitemap) ---
 [[plugins]]
   package = "netlify-plugin-submit-sitemap"
-
   [plugins.inputs]
-  baseUrl = "https://janesenginyeria.netlify.app"
-  sitemapPath = "/sitemap.xml"
-  ignorePeriod = 3600 # 1 hora en segundos
-  providers = [
-    "google",
-    "yandex"
-  ]
+    baseUrl = "https://clever-malabi-a1eea4.netlify.app"
+    sitemapPath = "/sitemap.xml"
+    ignorePeriod = 3600 # 1 hora
+    providers = [ "google", "yandex" ]
