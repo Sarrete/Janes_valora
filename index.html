@@ -91,20 +91,13 @@
   const stars = document.querySelectorAll('.star');
   let selectedRating = 0;
 
-  // ⭐ Función estrellas
-  stars.forEach(star => {
-    star.addEventListener('mouseover', () => {
-      const value = parseInt(star.dataset.value);
-      stars.forEach(s => s.classList.toggle('hover', parseInt(s.dataset.value) <= value));
-    });
-    star.addEventListener('mouseout', () => {
-      stars.forEach(s => s.classList.remove('hover'));
-    });
-    star.addEventListener('click', () => {
-      selectedRating = parseInt(star.dataset.value);
-      stars.forEach(s => s.classList.toggle('selected', parseInt(s.dataset.value) <= selectedRating));
-    });
-  });
+<div id="ratingStars">
+  <span class="star" data-value="1">★</span>
+  <span class="star" data-value="2">★</span>
+  <span class="star" data-value="3">★</span>
+  <span class="star" data-value="4">★</span>
+  <span class="star" data-value="5">★</span>
+</div>
 
   // 📩 Enviar valoración
   form.addEventListener('submit', async (e) => {
@@ -296,7 +289,7 @@
     </section>
 
       <!-- Sección de Valoraciones -->
-<section id="valoraciones" class="work-section section-4">
+<section id="valoracion" class="work-section section-4">
   <h2>Valoraciones</h2>
   <div class="container">
     <h3>Deja tu valoración</h3>
@@ -391,5 +384,6 @@
 
 </body>
 </html>
+
 
 
