@@ -1,0 +1,29 @@
+[[redirects]]
+  from = "http://*"
+  to = "https://:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.janesenginyeria.netlify.app/*"
+  to = "https://janesenginyeria.netlify.app/:splat"
+  status = 301
+  force = true
+
+[[headers]]
+  for = "/sitemap.xml"
+  [headers.values]
+    Content-Type = "application/xml"
+    Vary = "Accept-Encoding"
+
+[[plugins]]
+  package = "netlify-plugin-submit-sitemap"
+
+  [plugins.inputs]
+  baseUrl = "https://janesenginyeria.netlify.app"
+  sitemapPath = "/sitemap.xml"
+  ignorePeriod = 3600 # 1 hora en segundos
+  providers = [
+    "google",
+    "yandex"
+  ]

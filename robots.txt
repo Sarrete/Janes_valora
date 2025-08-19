@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://janesenginyeria.netlify.app/sitemap.xml
