@@ -93,7 +93,7 @@
             <li><a href="#mecanizado" data-i18n="menu_mecanizado">Trabajos de Mecanizado</a></li>
             <li><a href="#impresion-3d" data-i18n="menu_impresion_3d">Trabajos de Impresión 3D</a></li>
             <li><a href="#a-medida" data-i18n="menu_a_medida">Trabajos a Medida</a></li>
-            <li><a href="#valoracion" data-i18n="menu_valoracion">Valoraciones</a></li>
+            <li><a href="#ratingForm" data-i18n="menu_valoracion">Valoraciones</a></li>
             <li><a href="#contacto" data-i18n="menu_contacto">Contacto</a></li>
         </ul>
     </nav>
@@ -188,7 +188,6 @@
     </div>
     </section>
 
-      <!-- Sección de Valoraciones -->
       <!-- FORMULARIO DE VALORACIONES -->
 <form id="ratingForm" class="rating-form">
   <h2>Deja tu valoración</h2>
@@ -220,47 +219,6 @@
 <section id="reviews" class="reviews-list">
   <!-- Aquí se insertan en tiempo real las reseñas aprobadas -->
 </section>
-
-<section id="valoracion" class="work-section section-4">
-  <h2>Valoraciones</h2>
-  <div class="container">
-    <h3>Deja tu valoración</h3>
-
-   <form id="rating-form">
-      <div class="form-group">
-        <label for="name">Tu nombre:</label>
-        <input type="text" id="name" name="name" required>
-      </div>
-
-      <div class="form-group">
-        <label>Valoración:</label>
-        <div class="stars" id="ratingStars">
-          <span class="star" data-value="1">&#9733;</span>
-          <span class="star" data-value="2">&#9733;</span>
-          <span class="star" data-value="3">&#9733;</span>
-          <span class="star" data-value="4">&#9733;</span>
-          <span class="star" data-value="5">&#9733;</span>
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="comment">Comentario (opcional):</label>
-        <textarea id="comment" name="comment" rows="4"></textarea>
-      </div>
-
-      <div class="form-group">
-        <label for="photo">Subir foto (opcional):</label>
-        <input type="file" id="photo" name="photo" accept="image/*">
-      </div>
-
-      <button type="submit">Enviar valoración</button>
-    </form>
-
-    <h3>Valoraciones Recientes</h3>
-    <div id="reviews"></div>
-  </div>
-</section>
-
       
  <!-- Sección de contacto -->
     <section id="contacto" class="work-section section-5">
@@ -420,6 +378,7 @@
   
 </body>
 </html>
+
 
 
 
