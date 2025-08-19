@@ -65,101 +65,8 @@
           }
                          
         </script>       
-
-  </head>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
-
-  // ⚠️ Sustituye por tu config del proyecto "valoraciones-a8350"
-  const firebaseConfig = {
- ***REMOVED***
-    authDomain: "valoraciones-a8350.firebaseapp.com",
-    projectId: "valoraciones-a8350",
-    storageBucket: "valoraciones-a8350.appspot.com",
-    messagingSenderId: "286602851936",
-    appId: "1:286602851936:web:e1d4d11bfe1391dd1c7505"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-
-  const form = document.getElementById('ratingForm');
-  const reviewsContainer = document.getElementById('reviews');
-  const stars = document.querySelectorAll('.star');
-  let selectedRating = 0;
-
-  // 📩 Enviar valoración
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const comment = document.getElementById('comment').value;
-    const photoFile = document.getElementById('photo').files[0];
-
-    if (!name) { alert('Por favor, ingresa tu nombre.'); return; }
-    if (selectedRating === 0) { alert('Por favor, selecciona una valoración.'); return; }
-
-    try {
-      let photoURL = null;
-      if (photoFile) {
-        const photoRef = ref(storage, `valoraciones/${Date.now()}_${photoFile.name}`);
-        const snapshot = await uploadBytes(photoRef, photoFile);
-        photoURL = await getDownloadURL(snapshot.ref);
-      }
-
-      await addDoc(collection(db, 'valoraciones'), {
-        name,
-        rating: selectedRating,
-        comment: comment || 'Sin comentario',
-        photoURL: photoURL || null,
-        timestamp: serverTimestamp(),
-        aprobado: false // 🔒 Para que revises antes de mostrar
-      });
-
-      alert('Valoración enviada correctamente. Se revisará antes de publicarla.');
-      form.reset();
-      selectedRating = 0;
-      stars.forEach(s => s.classList.remove('selected'));
-      loadReviews();
-
-    } catch (err) {
-      console.error(err);
-      alert('Error al enviar la valoración.');
-    }
-  });
-
-  // 📖 Cargar valoraciones aprobadas
-  async function loadReviews() {
-    reviewsContainer.innerHTML = '';
-    try {
-      const q = query(collection(db, 'valoraciones'), where('aprobado', '==', true), orderBy('timestamp', 'desc'));
-      const snapshot = await getDocs(q);
-      snapshot.forEach(doc => {
-        const data = doc.data();
-        const div = document.createElement('div');
-        div.classList.add('review');
-        div.innerHTML = `
-          <h3>${data.name}</h3>
-          <p class="stars-display">
-            ${'★'.repeat(data.rating)}${'☆'.repeat(5 - data.rating)}
-          </p>
-          <p>${data.comment}</p>
-          ${data.photoURL ? `<img src="${data.photoURL}" alt="Foto valoracion">` : ''}
-        `;
-        reviewsContainer.appendChild(div);
-      });
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
-  // 🔄 Cargar reseñas al iniciar
-  loadReviews();
-</script>
-<!-- Elimina cualquier loadReviews() anterior -->
-
+</head>
+  
 <body>
   
     <div class="container">
@@ -385,8 +292,103 @@
     <!-- JavaScript -->
     <script src="js/script.js" defer></script>
     <script src="/valoraciones.js" type="module"></script>
+    <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
+
+  // ⚠️ Sustituye por tu config del proyecto "valoraciones-a8350"
+  const firebaseConfig = {
+ ***REMOVED***
+    authDomain: "valoraciones-a8350.firebaseapp.com",
+    projectId: "valoraciones-a8350",
+    storageBucket: "valoraciones-a8350.appspot.com",
+    messagingSenderId: "286602851936",
+    appId: "1:286602851936:web:e1d4d11bfe1391dd1c7505"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  const form = document.getElementById('ratingForm');
+  const reviewsContainer = document.getElementById('reviews');
+  const stars = document.querySelectorAll('.star');
+  let selectedRating = 0;
+
+  // 📩 Enviar valoración
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const comment = document.getElementById('comment').value;
+    const photoFile = document.getElementById('photo').files[0];
+
+    if (!name) { alert('Por favor, ingresa tu nombre.'); return; }
+    if (selectedRating === 0) { alert('Por favor, selecciona una valoración.'); return; }
+
+    try {
+      let photoURL = null;
+      if (photoFile) {
+        const photoRef = ref(storage, `valoraciones/${Date.now()}_${photoFile.name}`);
+        const snapshot = await uploadBytes(photoRef, photoFile);
+        photoURL = await getDownloadURL(snapshot.ref);
+      }
+
+      await addDoc(collection(db, 'valoraciones'), {
+        name,
+        rating: selectedRating,
+        comment: comment || 'Sin comentario',
+        photoURL: photoURL || null,
+        timestamp: serverTimestamp(),
+        aprobado: false // 🔒 Para que revises antes de mostrar
+      });
+
+      alert('Valoración enviada correctamente. Se revisará antes de publicarla.');
+      form.reset();
+      selectedRating = 0;
+      stars.forEach(s => s.classList.remove('selected'));
+      loadReviews();
+
+    } catch (err) {
+      console.error(err);
+      alert('Error al enviar la valoración.');
+    }
+  });
+
+  // 📖 Cargar valoraciones aprobadas
+  async function loadReviews() {
+    reviewsContainer.innerHTML = '';
+    try {
+      const q = query(collection(db, 'valoraciones'), where('aprobado', '==', true), orderBy('timestamp', 'desc'));
+      const snapshot = await getDocs(q);
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const div = document.createElement('div');
+        div.classList.add('review');
+        div.innerHTML = `
+          <h3>${data.name}</h3>
+          <p class="stars-display">
+            ${'★'.repeat(data.rating)}${'☆'.repeat(5 - data.rating)}
+          </p>
+          <p>${data.comment}</p>
+          ${data.photoURL ? `<img src="${data.photoURL}" alt="Foto valoracion">` : ''}
+        `;
+        reviewsContainer.appendChild(div);
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // 🔄 Cargar reseñas al iniciar
+  loadReviews();
+</script>
+<!-- Elimina cualquier loadReviews() anterior -->
+
+  
 </body>
 </html>
+
 
 
 
