@@ -6,13 +6,14 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstati
 document.addEventListener('DOMContentLoaded', () => {
     // --- Inicializar Firebase ---
     const firebaseConfig = {
-        apiKey: "AIzaSyBqGTWa97hI7Olw1LqRKlXtKi6Y5yV0Yks",
-        authDomain: "valoracion-web-11af4.firebaseapp.com",
-        projectId: "valoracion-web-11af4",
-        storageBucket: "valoracion-web-11af4.appspot.com",
-        messagingSenderId: "281280264244",
-        appId: "1:281280264244:web:6a07b7c0b61872ecf73261"
-    };
+  apiKey: "AIzaSyCCOHmdAFNnENTFDuZIw4kb51NqfXA12DA",
+  authDomain: "valoraciones-a8350.firebaseapp.com",
+  projectId: "valoraciones-a8350",
+  storageBucket: "valoraciones-a8350.appspot.com",
+  messagingSenderId: "286602851936",
+  appId: "1:286602851936:web:e1d4d11bfe1391dd1c7505"
+};
+    
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
