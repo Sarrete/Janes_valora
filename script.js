@@ -1,4 +1,3 @@
-// script.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 import { getFirestore, collection, addDoc, query, where, getDocs, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-storage.js";
@@ -6,14 +5,14 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstati
 document.addEventListener('DOMContentLoaded', () => {
     // --- Inicializar Firebase ---
     const firebaseConfig = {
-  apiKey: "AIzaSyCCOHmdAFNnENTFDuZIw4kb51NqfXA12DA",
-  authDomain: "valoraciones-a8350.firebaseapp.com",
-  projectId: "valoraciones-a8350",
-  storageBucket: "valoraciones-a8350.appspot.com",
-  messagingSenderId: "286602851936",
-  appId: "1:286602851936:web:e1d4d11bfe1391dd1c7505"
-};
-    
+        apiKey: "AIzaSyCCOHmdAFNnENTFDuZIw4kb51NqfXA12DA",
+        authDomain: "valoraciones-a8350.firebaseapp.com",
+        projectId: "valoraciones-a8350",
+        storageBucket: "valoraciones-a8350.appspot.com",
+        messagingSenderId: "286602851936",
+        appId: "1:286602851936:web:e1d4d11bfe1391dd1c7505"
+    };
+
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const storage = getStorage(app);
@@ -45,9 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const ratingInput = document.createElement('input');
     ratingInput.type = 'hidden';
     ratingInput.name = 'rating';
-    ratingInput.value = currentRating;
     form.appendChild(ratingInput);
 
+    // --- Envío de formulario ---
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         ratingInput.value = currentRating;
@@ -118,5 +117,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Inicio ---
+    loadReviews();
+});
+
     loadReviews();
 });
