@@ -87,7 +87,7 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// 7) ESCUCHA EN TIEMPO REAL — SOLO APROBADAS
+// 7) ESCUCHA EN TIEMPO REAL — SOLO RESEÑAS APROBADAS
 const q = query(
   collection(db, 'valoraciones'),
   where('aprobado', '==', true),
@@ -98,11 +98,12 @@ let todasLasReseñas = [];
 let mostrandoTodas = false;
 
 onSnapshot(q, (snapshot) => {
-  todasLasReseñas = [];
+  todasLasReseñas = []; // limpiar array
+
   snapshot.forEach(doc => {
     const data = doc.data();
 
-    // Evitar reseñas incompletas o undefined
+    // 🔒 Validación para evitar reseñas incompletas o undefined
     if (!data || !data.nombre || !data.comentario || !data.rating) return;
 
     todasLasReseñas.push({
@@ -124,9 +125,9 @@ function renderReviews() {
 
   lista.forEach(r => {
     const div = document.createElement("div");
-    div.classList.add("review-card");
+    div.classList.add("review-card"); // Clase para CSS
 
-    // Texto recortado
+    // Texto recortado si es muy largo
     const textoCorto = r.comentario.length > 120 ? r.comentario.slice(0, 120) + "..." : r.comentario;
 
     div.innerHTML = `
@@ -141,7 +142,7 @@ function renderReviews() {
 
     reviewsContainer.appendChild(div);
 
-    // Evento "Ver más"
+    // Evento "Ver más" para comentarios largos
     const btnVerMas = div.querySelector(".ver-mas");
     if (btnVerMas) {
       btnVerMas.addEventListener("click", () => {
@@ -167,9 +168,7 @@ if (verTodasBtn) {
   });
 }
 
-// 9) UTILIDADES
+// 9) FUNCION PARA ESCAPAR HTML
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, s => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[s]));
+  return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
 }
