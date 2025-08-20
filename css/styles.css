@@ -506,7 +506,7 @@ element.style {
 
 /* Efecto al pasar el ratón (opcional) */
 .review-card:hover {
-  background-color: #fffbe6;          /* Fondo crema suave */
+  background-color: #fffbe66e;          /* Fondo crema suave */
   border-color: gold;
   box-shadow: 0 4px 10px rgba(0,0,0,0.12);
 }
@@ -515,12 +515,12 @@ element.style {
 .review-card h3 {
   margin: 0 0 0.5rem;
   font-size: 1.1rem;
-  color: #333;
+  color: #f7f9fce6;
 }
 
 /* Comentario */
 .review-card .review-text {
-  color: #555;
+  color: #f4f4f4;
   line-height: 1.4;
 }
 
@@ -840,6 +840,7 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
 
 
 
