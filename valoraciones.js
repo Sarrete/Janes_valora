@@ -30,6 +30,9 @@ const reviewsContainer = document.getElementById('reviews');
 const verTodasBtn = document.getElementById('verTodasBtn');
 let currentRating = 0;
 
+// Mensaje de carga inicial
+reviewsContainer.innerHTML = '<p class="loading">Cargando valoraciones...</p>';
+
 // 5) ESTRELLAS INTERACTIVAS
 function updateStars(rating) {
   stars.forEach((star, idx) => {
@@ -98,15 +101,14 @@ let todasLasReseñas = [];
 let mostrandoTodas = false;
 
 onSnapshot(q, (snapshot) => {
-  todasLasReseñas = [];
+  const nuevas = [];
 
   snapshot.forEach(doc => {
     const data = doc.data();
 
-    // Validación estricta
-    if (!data || !data.nombre || typeof data.rating !== 'number') return;
+    if (!data?.nombre || typeof data.rating !== 'number') return;
 
-    todasLasReseñas.push({
+    nuevas.push({
       nombre: data.nombre,
       comentario: data.comentario || 'Sin comentario',
       rating: data.rating,
@@ -114,7 +116,14 @@ onSnapshot(q, (snapshot) => {
     });
   });
 
-  renderReviews();
+  todasLasReseñas = nuevas;
+
+  // Reemplazamos mensaje de carga solo cuando haya intentado cargar al menos una vez
+  if (todasLasReseñas.length > 0) {
+    renderReviews();
+  } else {
+    reviewsContainer.innerHTML = '<p class="no-data">No hay valoraciones aprobadas todavía.</p>';
+  }
 });
 
 function renderReviews() {
