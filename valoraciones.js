@@ -27,6 +27,7 @@ const storage = getStorage(app);
 const form = document.getElementById('ratingForm');
 const stars = document.querySelectorAll('#ratingStars .star');
 const reviewsContainer = document.getElementById('reviews');
+const verTodasBtn = document.getElementById('verTodasBtn');
 let currentRating = 0;
 
 // 5) ESTRELLAS INTERACTIVAS
@@ -93,25 +94,80 @@ const q = query(
   orderBy('timestamp', 'desc')
 );
 
+let todasLasReseñas = [];
+let mostrandoTodas = false;
+
 onSnapshot(q, (snapshot) => {
-  reviewsContainer.innerHTML = '';
+  todasLasReseñas = [];
   snapshot.forEach(doc => {
     const data = doc.data();
-    const div = document.createElement('div');
-    div.classList.add('review');
-    div.innerHTML = `
-      <h3>${escapeHtml(data.nombre)}</h3>
-      <p class="stars-display">
-        ${'★'.repeat(data.rating)}${'☆'.repeat(5 - data.rating)}
-      </p>
-      <p>${escapeHtml(data.comentario)}</p>
-      ${data.photoURL ? `<img src="${data.photoURL}" alt="Foto valoración">` : ''}
-    `;
-    reviewsContainer.appendChild(div);
+
+    // Evitar reseñas incompletas o undefined
+    if (!data || !data.nombre || !data.comentario || !data.rating) return;
+
+    todasLasReseñas.push({
+      nombre: data.nombre,
+      comentario: data.comentario,
+      rating: data.rating,
+      photoURL: data.photoURL || null
+    });
   });
+
+  renderReviews();
 });
 
-// 8) UTILIDADES
+function renderReviews() {
+  reviewsContainer.innerHTML = "";
+
+  // Mostrar todas o solo las 3 últimas
+  const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
+
+  lista.forEach(r => {
+    const div = document.createElement("div");
+    div.classList.add("review-card");
+
+    // Texto recortado
+    const textoCorto = r.comentario.length > 120 ? r.comentario.slice(0, 120) + "..." : r.comentario;
+
+    div.innerHTML = `
+      <h3>${escapeHtml(r.nombre)}</h3>
+      <p class="stars-display">
+        ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}
+      </p>
+      <p class="review-text">${escapeHtml(textoCorto)}</p>
+      ${r.comentario.length > 120 ? '<button class="ver-mas">Ver más</button>' : ""}
+      ${r.photoURL ? `<img src="${r.photoURL}" alt="Foto valoración">` : ""}
+    `;
+
+    reviewsContainer.appendChild(div);
+
+    // Evento "Ver más"
+    const btnVerMas = div.querySelector(".ver-mas");
+    if (btnVerMas) {
+      btnVerMas.addEventListener("click", () => {
+        const p = div.querySelector(".review-text");
+        if (p.innerText.endsWith("...")) {
+          p.innerText = r.comentario;
+          btnVerMas.innerText = "Ver menos";
+        } else {
+          p.innerText = textoCorto;
+          btnVerMas.innerText = "Ver más";
+        }
+      });
+    }
+  });
+}
+
+// 8) BOTÓN "VER TODAS"
+if (verTodasBtn) {
+  verTodasBtn.addEventListener("click", () => {
+    mostrandoTodas = !mostrandoTodas;
+    renderReviews();
+    verTodasBtn.innerText = mostrandoTodas ? "Ver menos valoraciones" : "Ver todas las valoraciones";
+  });
+}
+
+// 9) UTILIDADES
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, s => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
