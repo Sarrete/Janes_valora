@@ -73,7 +73,7 @@ form.addEventListener('submit', async (e) => {
       rating: currentRating,
       photoURL: photoURL || null,
       timestamp: serverTimestamp(),
-      aprobado: false // ← siempre false al crear
+      aprobado: false
     });
 
     alert('Valoración enviada. Se revisará antes de publicarse.');
@@ -98,17 +98,17 @@ let todasLasReseñas = [];
 let mostrandoTodas = false;
 
 onSnapshot(q, (snapshot) => {
-  todasLasReseñas = []; // limpiar array
+  todasLasReseñas = [];
 
   snapshot.forEach(doc => {
     const data = doc.data();
 
-    // 🔒 Validación para evitar reseñas incompletas o undefined
-    if (!data || !data.nombre || !data.comentario || !data.rating) return;
+    // Validación estricta
+    if (!data || !data.nombre || typeof data.rating !== 'number') return;
 
     todasLasReseñas.push({
       nombre: data.nombre,
-      comentario: data.comentario,
+      comentario: data.comentario || 'Sin comentario',
       rating: data.rating,
       photoURL: data.photoURL || null
     });
@@ -120,15 +120,16 @@ onSnapshot(q, (snapshot) => {
 function renderReviews() {
   reviewsContainer.innerHTML = "";
 
-  // Mostrar todas o solo las 3 últimas
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
 
   lista.forEach(r => {
     const div = document.createElement("div");
-    div.classList.add("review-card"); // Clase para CSS
+    div.classList.add("review-card");
 
-    // Texto recortado si es muy largo
-    const textoCorto = r.comentario.length > 120 ? r.comentario.slice(0, 120) + "..." : r.comentario;
+    const comentarioSeguro = String(r.comentario || 'Sin comentario');
+    const textoCorto = comentarioSeguro.length > 120
+      ? comentarioSeguro.slice(0, 120) + "..."
+      : comentarioSeguro;
 
     div.innerHTML = `
       <h3>${escapeHtml(r.nombre)}</h3>
@@ -136,19 +137,18 @@ function renderReviews() {
         ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}
       </p>
       <p class="review-text">${escapeHtml(textoCorto)}</p>
-      ${r.comentario.length > 120 ? '<button class="ver-mas">Ver más</button>' : ""}
+      ${comentarioSeguro.length > 120 ? '<button class="ver-mas">Ver más</button>' : ""}
       ${r.photoURL ? `<img src="${r.photoURL}" alt="Foto valoración">` : ""}
     `;
 
     reviewsContainer.appendChild(div);
 
-    // Evento "Ver más" para comentarios largos
     const btnVerMas = div.querySelector(".ver-mas");
     if (btnVerMas) {
       btnVerMas.addEventListener("click", () => {
         const p = div.querySelector(".review-text");
         if (p.innerText.endsWith("...")) {
-          p.innerText = r.comentario;
+          p.innerText = comentarioSeguro;
           btnVerMas.innerText = "Ver menos";
         } else {
           p.innerText = textoCorto;
@@ -170,5 +170,7 @@ if (verTodasBtn) {
 
 // 9) FUNCION PARA ESCAPAR HTML
 function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
+  return String(str).replace(/[&<>"']/g, s =>
+    ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s])
+  );
 }
