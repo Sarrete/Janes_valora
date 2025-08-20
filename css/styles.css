@@ -385,6 +385,95 @@ element.style {
     border-radius: 5px;
 }
 
+/* === ESTILOS VALORACIONES === */
+.reviews-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.review {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-height: 250px; /* altura uniforme */
+  overflow: hidden;
+  position: relative;
+}
+
+.review h3 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+.review .stars-display {
+  color: gold;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.review p {
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.review img {
+  max-width: 100%;
+  max-height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-top: auto;
+}
+
+/* Botón Ver más */
+.ver-mas-btn {
+  background: none;
+  border: none;
+  color: #007BFF;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  margin-top: 0.3rem;
+  align-self: flex-start;
+}
+
+.ver-mas-btn:hover {
+  text-decoration: underline;
+}
+
+/* Control de reseñas: ver todas */
+#reviews-controls button {
+  background: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+#reviews-controls button:hover {
+  background: #0056b3;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .reviews-list {
+    grid-template-columns: 1fr;
+  }
+
+  .review {
+    max-height: 220px;
+  }
+}
+
 .stars {
   display: flex;
   gap: 5px;
@@ -715,6 +804,7 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
 
 
 
