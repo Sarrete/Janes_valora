@@ -390,6 +390,7 @@ element.style {
   gap: 5px;
   font-size: 2rem;
   cursor: pointer;
+  z-index: 1;
 }
 
 .star {
@@ -714,6 +715,7 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
 
 
 
