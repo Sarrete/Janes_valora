@@ -482,9 +482,11 @@ element.style {
   color: gold;
 }
 
-/* Modo display: estrellas en reseñas ya aceptadas/publicadas */
-.stars-display .star {
-  color: gold !important;
+/* Estrellas doradas fijas en reseñas aprobadas */
+.stars-display {
+  color: gold !important; /* fuerza el dorado */
+  font-size: 1.2rem;
+  margin: 0;
 }
 
 
@@ -807,6 +809,7 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
 
 
 
