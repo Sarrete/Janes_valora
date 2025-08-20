@@ -387,7 +387,7 @@ element.style {
 
 /* === ESTILOS VALORACIONES === */
 .reviews-list {
-  display: grid;
+  display: grid; !important;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-top: 2rem;
@@ -804,6 +804,7 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
 
 
 
