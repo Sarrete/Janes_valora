@@ -200,13 +200,13 @@ header {
 .gears-left {
     top: 30%;
     left: -287px;
-    z-index: 1; /* Asegura que estén encima de otros elementos */
+    z-index: 0; /* Asegura que estén encima de otros elementos */
 }
 
 .gears-right {
     top: 30%;
     right: -288px;
-    z-index: 1; /* Asegura que estén encima de otros elementos */
+    z-index: 0; /* Asegura que estén encima de otros elementos */
 }
 
 
@@ -577,10 +577,12 @@ button:hover {
 
     .gears-left {
         left: -296px; /* Ajusta el desplazamiento para móviles */
+        z-index: 0;
     }
 
     .gears-right {
         right: -296px; /* Ajusta el desplazamiento para móviles */
+        z-index: 0;
     }
 
     .popup-content {
@@ -712,5 +714,6 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
 
 
