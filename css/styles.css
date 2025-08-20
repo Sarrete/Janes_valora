@@ -385,31 +385,38 @@ element.style {
     border-radius: 5px;
 }
 
-/* === ESTILOS VALORACIONES === */
+/* === ESTILOS VALORACIONES OPTIMIZADOS === */
 .reviews-list {
-  display: grid; !important;
-  grid-template-columns: repeat(3, 1fr);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
   margin-top: 2rem;
 }
 
 .review {
-  background: #fff;
+  background-color: #ffffff; /* fondo base */
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  max-height: 250px; /* altura uniforme */
-  overflow: hidden;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  white-space: normal;
   position: relative;
+  transition: background-color 0.3s ease;
+}
+
+/* Alternar colores para diferenciar valoraciones */
+.review:nth-child(even) {
+  background-color: #f7f9fc;
 }
 
 .review h3 {
   font-size: 1rem;
   margin-bottom: 0.5rem;
   font-weight: bold;
+  color: #222;
 }
 
 .review .stars-display {
@@ -421,15 +428,16 @@ element.style {
 .review p {
   font-size: 0.9rem;
   color: #333;
+  line-height: 1.4;
   margin-bottom: 0.5rem;
 }
 
 .review img {
   max-width: 100%;
-  max-height: 120px;
+  height: auto;
   object-fit: cover;
   border-radius: 8px;
-  margin-top: auto;
+  margin-top: 0.5rem;
 }
 
 /* Botón Ver más */
@@ -463,17 +471,7 @@ element.style {
   background: #0056b3;
 }
 
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .reviews-list {
-    grid-template-columns: 1fr;
-  }
-
-  .review {
-    max-height: 220px;
-  }
-}
-
+/* Estrellas de valoración */
 .stars {
   display: flex;
   gap: 5px;
@@ -494,6 +492,13 @@ element.style {
 
 .form-group {
   margin-bottom: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reviews-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 
@@ -804,6 +809,7 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
 
 
 
