@@ -686,6 +686,61 @@ button:hover {
     gap: 16px; /* Espacio entre las reseñas */
 }
 
+/* --- Ajuste de estilo y espaciado para el formulario de valoración --- */
+.rating-form {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 500px;
+  margin: 20px auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.rating-form label {
+  display: block;
+  font-weight: bold;
+  margin-top: 12px;
+}
+
+.rating-form input[type="text"],
+.rating-form textarea,
+.rating-form input[type="file"] {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+}
+
+/* Estrellas separadas en su propia línea */
+.stars {
+  margin: 8px 0 16px 0;
+  font-size: 1.5em;
+  color: gold;
+}
+
+/* Área de comentario más amplia y consistente */
+.rating-form textarea {
+  min-height: 120px;
+  resize: vertical;
+  margin-bottom: 12px; /* Espacio antes del campo foto */
+}
+
+/* Botón enviar en su propia línea y destacado */
+.rating-form button {
+  display: block;
+  margin-top: 16px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.rating-form button:hover {
+  background-color: #0056b3;
+}
+
 /* Media Queries para dispositivos pequeños */
 @media (max-width: 480px) {
     .image-container {
@@ -848,6 +903,7 @@ button:hover {
   pointer-events: none !important; /* No capturan clics en ninguna pantalla */
   z-index: 0 !important;           /* Se mantienen siempre al fondo */
 }
+
 
 
 
