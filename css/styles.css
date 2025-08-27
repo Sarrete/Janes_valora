@@ -842,6 +842,13 @@ button:hover {
 }
 
 
+/* --- Ajuste global para piñones --- */
+.gears-left,
+.gears-right {
+  pointer-events: none !important; /* No capturan clics en ninguna pantalla */
+  z-index: 0 !important;           /* Se mantienen siempre al fondo */
+}
+
 
 
 
