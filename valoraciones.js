@@ -60,7 +60,7 @@ form.addEventListener('submit', async (e) => {
   try {
     let photoURL = null;
 
-    // 🔹 Subida a Cloudinary con preset UNSIGNED
+    // 🔹 Subida a Cloudinary
     if (photoFile) {
       const data = new FormData();
       data.append("file", photoFile);
