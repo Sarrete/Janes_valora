@@ -4,9 +4,6 @@ import {
   getFirestore, collection, addDoc, serverTimestamp,
   query, where, orderBy, onSnapshot
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-import {
-  getStorage, ref, uploadBytes, getDownloadURL
-} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js';
 
 // 2) CONFIGURACIÓN FIREBASE
 const firebaseConfig = {
@@ -21,7 +18,6 @@ const firebaseConfig = {
 // 3) INICIALIZAR APP Y SERVICIOS
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 // 4) ELEMENTOS DOM
 const form = document.getElementById('ratingForm');
@@ -64,10 +60,21 @@ form.addEventListener('submit', async (e) => {
   try {
     let photoURL = null;
 
+    // 🔹 Subida a Cloudinary con preset UNSIGNED
     if (photoFile) {
-      const storageRef = ref(storage, `valoraciones/${Date.now()}_${photoFile.name}`);
-      const snapshot = await uploadBytes(storageRef, photoFile);
-      photoURL = await getDownloadURL(snapshot.ref);
+      const data = new FormData();
+      data.append("file", photoFile);
+      data.append("upload_preset", "valoraciones_janes"); // 👈 tu preset unsigned
+      data.append("folder", "valoraciones"); // opcional
+
+      const res = await fetch("https://api.cloudinary.com/v1_1/dcsez2e0d/image/upload", {
+        method: "POST",
+        body: data,
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error?.message || 'Error subiendo imagen');
+      photoURL = json.secure_url;
     }
 
     await addDoc(collection(db, 'valoraciones'), {
@@ -86,7 +93,7 @@ form.addEventListener('submit', async (e) => {
 
   } catch (err) {
     console.error(err);
-    alert('Error al enviar la valoración.');
+    alert('Error al enviar la valoración: ' + (err?.message || err));
   }
 });
 
@@ -118,7 +125,6 @@ onSnapshot(q, (snapshot) => {
 
   todasLasReseñas = nuevas;
 
-  // Reemplazamos mensaje de carga solo cuando haya intentado cargar al menos una vez
   if (todasLasReseñas.length > 0) {
     renderReviews();
   } else {
