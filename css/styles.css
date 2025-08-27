@@ -688,7 +688,7 @@ button:hover {
 
 /* --- Ajuste de estilo y espaciado para el formulario de valoración --- */
 .rating-form {
-  background: #fff;
+  background: rgb(0 0 0 / 47%);
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 16px;
@@ -903,6 +903,7 @@ button:hover {
   pointer-events: none !important; /* No capturan clics en ninguna pantalla */
   z-index: 0 !important;           /* Se mantienen siempre al fondo */
 }
+
 
 
 
