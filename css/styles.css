@@ -432,7 +432,7 @@ element.style {
   margin-bottom: 0.5rem;
 }
 
-.review img {
+.review-card img {
   max-width: 100%;
   height: auto;
   object-fit: cover;
@@ -840,6 +840,7 @@ button:hover {
         grid-template-columns: 1fr; /* 1 columna en pantallas pequeñas */
     }
 }
+
 
 
 
