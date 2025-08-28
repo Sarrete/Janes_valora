@@ -191,11 +191,17 @@
 <section id="valoraciones" class="work-section section-4">
   <h2>Deja tu valoración</h2>
 
-  <!-- Formulario -->
+  <!-- Formulario (actualizado con mejoras de seguridad) -->
   <form id="ratingForm" class="rating-form">
     <!-- Nombre -->
     <label for="name">Nombre:</label>
-    <input type="text" id="name" name="name" required maxlength="50" placeholder="Tu nombre (máx. 50 caracteres)">
+    <input 
+      type="text" 
+      id="name" 
+      name="name" 
+      required 
+      maxlength="50"
+      placeholder="Tu nombre (máx. 50 caracteres)">
 
     <!-- Valoración -->
     <label>Valoración:</label>
@@ -209,14 +215,20 @@
 
     <!-- Comentario -->
     <label for="comment">Comentario:</label>
-    <textarea id="comment" name="comment" rows="3" maxlength="500" placeholder="Escribe tu comentario (máx. 500 caracteres)"></textarea>
+    <textarea 
+      id="comment" 
+      name="comment" 
+      rows="3" 
+      maxlength="500"
+      placeholder="Escribe tu comentario (máx. 500 caracteres)"></textarea>
 
     <!-- Foto -->
     <label for="photo">Foto (opcional):</label>
-    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.webp" onchange="validarArchivo(event)">
-
-    <!-- Campo oculto para URL de Cloudinary -->
-    <input type="hidden" id="photoURL" name="photoURL">
+    <input 
+      type="file" 
+      id="photo" 
+      name="photo" 
+      accept="image/png, image/jpeg, image/webp">
 
     <!-- Botón -->
     <button type="submit">Enviar valoración</button>
@@ -224,8 +236,10 @@
 
   <hr>
 
-  <!-- Reseñas -->
-  <div id="reviews" class="reviews-list"></div>
+  <!-- Reseñas aprobadas -->
+  <div id="reviews" class="reviews-list">
+    <!-- Aquí se insertan automáticamente las reseñas -->
+  </div>
 
   <!-- Botón ver todas -->
   <div id="reviews-controls" style="text-align:center; margin-top:1rem;">
@@ -233,93 +247,6 @@
   </div>
 </section>
 
-<script>
-// ===== Estrellas seleccionables =====
-document.querySelectorAll('#ratingStars .star').forEach((star, idx, arr) => {
-  star.addEventListener('click', () => {
-    arr.forEach((s, i) => s.classList.toggle('selected', i <= idx));
-  });
-});
-
-// ===== Validar y subir imagen =====
-async function validarArchivo(e) {
-  const archivo = e.target.files[0];
-  if (!archivo) return;
-
-  // Validar peso
-  if (archivo.size > 5242880) {
-    alert("El archivo supera los 5 MB permitidos.");
-    e.target.value = "";
-    return;
-  }
-
-  // Validar tipo
-  const formatosPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
-  if (!formatosPermitidos.includes(archivo.type)) {
-    alert("Formato no permitido. Solo JPG, PNG o WEBP.");
-    e.target.value = "";
-    return;
-  }
-
-  // Subida directa a Cloudinary
-  const url = `https://api.cloudinary.com/v1_1/TU_CLOUD_NAME/image/upload`;
-  const formData = new FormData();
-  formData.append("file", archivo);
-  formData.append("upload_preset", "valoraciones_janes");
-
-  try {
-    const resp = await fetch(url, { method: "POST", body: formData });
-    const data = await resp.json();
-    document.getElementById("photoURL").value = data.secure_url;
-    console.log("Imagen subida:", data.secure_url);
-  } catch (err) {
-    console.error("Error subiendo imagen:", err);
-    alert("Error subiendo la imagen");
-  }
-}
-
-// ===== Guardar en Firestore =====
-document.getElementById("ratingForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
-
-  const nombre = document.getElementById("name").value.trim();
-  const comentario = document.getElementById("comment").value.trim();
-  const photoURL = document.getElementById("photoURL").value || "";
-  const rating = document.querySelectorAll("#ratingStars .selected").length || 0;
-
-  if (rating === 0) {
-    alert("Por favor, selecciona una valoración de estrellas.");
-    return;
-  }
-
-  await firebase.firestore().collection("valoraciones").add({
-    nombre,
-    comentario,
-    photoURL,
-    rating,
-    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-    aprobado: false
-  });
-
-  alert("Valoración enviada correctamente");
-  e.target.reset();
-  document.querySelectorAll("#ratingStars .star").forEach(s => s.classList.remove("selected"));
-});
-</script>
-
-<style>
-#ratingStars .star {
-  cursor: pointer;
-  font-size: 2rem;
-  color: #ccc;
-}
-#ratingStars .star.selected {
-  color: gold;
-}
-</style>
-
-
-      
       
  <!-- Sección de contacto -->
     <section id="contacto" class="work-section section-5">
@@ -389,6 +316,7 @@ document.getElementById("ratingForm").addEventListener("submit", async function(
 
 </body>
 </html>
+
 
 
 
