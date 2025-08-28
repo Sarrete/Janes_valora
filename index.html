@@ -191,17 +191,11 @@
 <section id="valoraciones" class="work-section section-4">
   <h2>Deja tu valoración</h2>
 
-  <!-- Formulario con control de formatos, tamaño y subida a Cloudinary -->
+  <!-- Formulario -->
   <form id="ratingForm" class="rating-form">
     <!-- Nombre -->
     <label for="name">Nombre:</label>
-    <input 
-      type="text" 
-      id="name" 
-      name="name" 
-      required 
-      maxlength="50"
-      placeholder="Tu nombre (máx. 50 caracteres)">
+    <input type="text" id="name" name="name" required maxlength="50" placeholder="Tu nombre (máx. 50 caracteres)">
 
     <!-- Valoración -->
     <label>Valoración:</label>
@@ -215,23 +209,13 @@
 
     <!-- Comentario -->
     <label for="comment">Comentario:</label>
-    <textarea 
-      id="comment" 
-      name="comment" 
-      rows="3" 
-      maxlength="500"
-      placeholder="Escribe tu comentario (máx. 500 caracteres)"></textarea>
+    <textarea id="comment" name="comment" rows="3" maxlength="500" placeholder="Escribe tu comentario (máx. 500 caracteres)"></textarea>
 
     <!-- Foto -->
     <label for="photo">Foto (opcional):</label>
-    <input 
-      type="file" 
-      id="photo" 
-      name="photo" 
-      accept=".jpg,.jpeg,.png,.webp"
-      onchange="validarArchivo(event)">
+    <input type="file" id="photo" name="photo" accept=".jpg,.jpeg,.png,.webp" onchange="validarArchivo(event)">
 
-    <!-- Campo oculto para almacenar la URL de Cloudinary -->
+    <!-- Campo oculto para URL de Cloudinary -->
     <input type="hidden" id="photoURL" name="photoURL">
 
     <!-- Botón -->
@@ -240,10 +224,8 @@
 
   <hr>
 
-  <!-- Reseñas aprobadas -->
-  <div id="reviews" class="reviews-list">
-    <!-- Aquí se insertan automáticamente las reseñas -->
-  </div>
+  <!-- Reseñas -->
+  <div id="reviews" class="reviews-list"></div>
 
   <!-- Botón ver todas -->
   <div id="reviews-controls" style="text-align:center; margin-top:1rem;">
@@ -251,32 +233,27 @@
   </div>
 </section>
 
-<!-- Script de Cloudinary -->
-<script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
 <script>
-// ======== Control de estrellas =========
+// ===== Estrellas seleccionables =====
 document.querySelectorAll('#ratingStars .star').forEach((star, idx, arr) => {
   star.addEventListener('click', () => {
-    arr.forEach((s, i) => {
-      s.classList.toggle('selected', i <= idx);
-    });
+    arr.forEach((s, i) => s.classList.toggle('selected', i <= idx));
   });
 });
 
-let widgetCloudinary; 
-
-function validarArchivo(e) {
+// ===== Validar y subir imagen =====
+async function validarArchivo(e) {
   const archivo = e.target.files[0];
   if (!archivo) return;
 
-  // Validar tamaño
+  // Validar peso
   if (archivo.size > 5242880) {
     alert("El archivo supera los 5 MB permitidos.");
     e.target.value = "";
     return;
   }
 
-  // Validar formato real
+  // Validar tipo
   const formatosPermitidos = ['image/jpeg', 'image/png', 'image/webp'];
   if (!formatosPermitidos.includes(archivo.type)) {
     alert("Formato no permitido. Solo JPG, PNG o WEBP.");
@@ -284,26 +261,24 @@ function validarArchivo(e) {
     return;
   }
 
-  // Crear widget solo una vez
-  if (!widgetCloudinary) {
-    widgetCloudinary = cloudinary.createUploadWidget({
-      cloudName: 'TU_CLOUD_NAME', // Cambia por tu cloudName
-      uploadPreset: 'valoraciones_janes',
-      clientAllowedFormats: ['jpg', 'png', 'webp'],
-      maxFileSize: 5242880,
-      multiple: false
-    }, (error, result) => {
-      if (!error && result.event === "success") {
-        console.log("Imagen subida con éxito:", result.info.secure_url);
-        document.getElementById("photoURL").value = result.info.secure_url;
-      }
-    });
-  }
+  // Subida directa a Cloudinary
+  const url = `https://api.cloudinary.com/v1_1/TU_CLOUD_NAME/image/upload`;
+  const formData = new FormData();
+  formData.append("file", archivo);
+  formData.append("upload_preset", "valoraciones_janes");
 
-  widgetCloudinary.open();
+  try {
+    const resp = await fetch(url, { method: "POST", body: formData });
+    const data = await resp.json();
+    document.getElementById("photoURL").value = data.secure_url;
+    console.log("Imagen subida:", data.secure_url);
+  } catch (err) {
+    console.error("Error subiendo imagen:", err);
+    alert("Error subiendo la imagen");
+  }
 }
 
-// ======== Envío del formulario a Firestore =========
+// ===== Guardar en Firestore =====
 document.getElementById("ratingForm").addEventListener("submit", async function(e) {
   e.preventDefault();
 
@@ -318,10 +293,10 @@ document.getElementById("ratingForm").addEventListener("submit", async function(
   }
 
   await firebase.firestore().collection("valoraciones").add({
-    nombre: nombre,
-    comentario: comentario,
-    photoURL: photoURL,
-    rating: rating,
+    nombre,
+    comentario,
+    photoURL,
+    rating,
     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
     aprobado: false
   });
@@ -333,15 +308,14 @@ document.getElementById("ratingForm").addEventListener("submit", async function(
 </script>
 
 <style>
-  /* Estilo de estrellas seleccionadas */
-  #ratingStars .star {
-    cursor: pointer;
-    font-size: 2rem;
-    color: #ccc;
-  }
-  #ratingStars .star.selected {
-    color: gold;
-  }
+#ratingStars .star {
+  cursor: pointer;
+  font-size: 2rem;
+  color: #ccc;
+}
+#ratingStars .star.selected {
+  color: gold;
+}
 </style>
 
 
@@ -415,5 +389,6 @@ document.getElementById("ratingForm").addEventListener("submit", async function(
 
 </body>
 </html>
+
 
 
