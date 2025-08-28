@@ -191,11 +191,19 @@
 <section id="valoraciones" class="work-section section-4">
   <h2>Deja tu valoración</h2>
 
-  <!-- Formulario -->
+  <!-- Formulario (actualizado con mejoras de seguridad) -->
   <form id="ratingForm" class="rating-form">
+    <!-- Nombre -->
     <label for="name">Nombre:</label>
-    <input type="text" id="name" name="name" required>
+    <input 
+      type="text" 
+      id="name" 
+      name="name" 
+      required 
+      maxlength="50"
+      placeholder="Tu nombre (máx. 50 caracteres)">
 
+    <!-- Valoración -->
     <label>Valoración:</label>
     <div id="ratingStars" class="stars">
       <span class="star">★</span>
@@ -205,12 +213,24 @@
       <span class="star">★</span>
     </div>
 
+    <!-- Comentario -->
     <label for="comment">Comentario:</label>
-    <textarea id="comment" name="comment" rows="3"></textarea>
+    <textarea 
+      id="comment" 
+      name="comment" 
+      rows="3" 
+      maxlength="500"
+      placeholder="Escribe tu comentario (máx. 500 caracteres)"></textarea>
 
+    <!-- Foto -->
     <label for="photo">Foto (opcional):</label>
-    <input type="file" id="photo" name="photo" accept="image/*">
+    <input 
+      type="file" 
+      id="photo" 
+      name="photo" 
+      accept="image/png, image/jpeg, image/webp">
 
+    <!-- Botón -->
     <button type="submit">Enviar valoración</button>
   </form>
 
@@ -297,3 +317,4 @@
 
 </body>
 </html>
+
