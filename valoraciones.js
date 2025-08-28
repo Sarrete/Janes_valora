@@ -1,4 +1,4 @@
-// 1) IMPORTS
+// 1) IMPORTS FIREBASE
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
   getFirestore, collection, addDoc, serverTimestamp,
@@ -64,8 +64,8 @@ form.addEventListener('submit', async (e) => {
     if (photoFile) {
       const data = new FormData();
       data.append("file", photoFile);
-      data.append("upload_preset", "valoraciones_janes"); // 👈 tu preset unsigned
-      data.append("folder", "valoraciones"); // opcional
+      data.append("upload_preset", "valoraciones_janes"); // preset unsigned
+      data.append("folder", "valoraciones");
 
       const res = await fetch("https://api.cloudinary.com/v1_1/dcsez2e0d/image/upload", {
         method: "POST",
@@ -132,6 +132,7 @@ onSnapshot(q, (snapshot) => {
   }
 });
 
+// 8) RENDER DE RESEÑAS SEGURO
 function renderReviews() {
   reviewsContainer.innerHTML = "";
 
@@ -146,22 +147,30 @@ function renderReviews() {
       ? comentarioSeguro.slice(0, 120) + "..."
       : comentarioSeguro;
 
-    div.innerHTML = `
-      <h3>${escapeHtml(r.nombre)}</h3>
-      <p class="stars-display">
-        ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}
-      </p>
-      <p class="review-text">${escapeHtml(textoCorto)}</p>
-      ${comentarioSeguro.length > 120 ? '<button class="ver-mas">Ver más</button>' : ""}
-      ${r.photoURL ? `<img src="${r.photoURL}" alt="Foto valoración">` : ""}
-    `;
+    // Nombre
+    const h3 = document.createElement("h3");
+    h3.textContent = r.nombre;
+    div.appendChild(h3);
 
-    reviewsContainer.appendChild(div);
+    // Estrellas
+    const starsP = document.createElement("p");
+    starsP.classList.add("stars-display");
+    starsP.textContent = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+    div.appendChild(starsP);
 
-    const btnVerMas = div.querySelector(".ver-mas");
-    if (btnVerMas) {
+    // Comentario
+    const p = document.createElement("p");
+    p.classList.add("review-text");
+    p.textContent = textoCorto;
+    div.appendChild(p);
+
+    // Botón "Ver más"
+    if (comentarioSeguro.length > 120) {
+      const btnVerMas = document.createElement("button");
+      btnVerMas.classList.add("ver-mas");
+      btnVerMas.innerText = "Ver más";
+
       btnVerMas.addEventListener("click", () => {
-        const p = div.querySelector(".review-text");
         if (p.innerText.endsWith("...")) {
           p.innerText = comentarioSeguro;
           btnVerMas.innerText = "Ver menos";
@@ -170,22 +179,28 @@ function renderReviews() {
           btnVerMas.innerText = "Ver más";
         }
       });
+
+      div.appendChild(btnVerMas);
     }
+
+    // Imagen segura
+    if (r.photoURL) {
+      const img = document.createElement("img");
+      img.src = r.photoURL;
+      img.alt = "Foto valoración";
+      img.loading = "lazy";
+      div.appendChild(img);
+    }
+
+    reviewsContainer.appendChild(div);
   });
 }
 
-// 8) BOTÓN "VER TODAS"
+// 9) BOTÓN "VER TODAS"
 if (verTodasBtn) {
   verTodasBtn.addEventListener("click", () => {
     mostrandoTodas = !mostrandoTodas;
     renderReviews();
     verTodasBtn.innerText = mostrandoTodas ? "Ver menos valoraciones" : "Ver todas las valoraciones";
   });
-}
-
-// 9) FUNCION PARA ESCAPAR HTML
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, s =>
-    ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s])
-  );
 }
