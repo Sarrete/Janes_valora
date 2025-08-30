@@ -84,6 +84,29 @@ header {
     display: block; /* Mostrar cuando se haga clic */
 }
 
+/* Oculta visualmente pero mantiene accesible */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Oculto visualmente pero accesible, y se mostrará con .show-select */
+.visually-hidden {
+  position: absolute;
+  left: -9999px;
+}
+.show-select .visually-hidden {
+  position: static;
+  left: auto;
+}
+
 /* Icono del men  hamburguesa */
 .menu-icon {
     display: flex;
@@ -903,6 +926,7 @@ button:hover {
   pointer-events: none !important; /* No capturan clics en ninguna pantalla */
   z-index: 0 !important;           /* Se mantienen siempre al fondo */
 }
+
 
 
 
