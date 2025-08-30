@@ -46,6 +46,12 @@ stars.forEach((star, idx) => {
   });
 });
 
+// 🔹 Función para detectar código malicioso
+function contieneCodigoPeligroso(texto) {
+  const patron = /<\s*script|onerror\s*=|onload\s*=|javascript:|<\s*iframe|<\s*img|<\s*svg/i;
+  return patron.test(texto);
+}
+
 // 6) ENVÍO DEL FORMULARIO
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -57,10 +63,15 @@ form.addEventListener('submit', async (e) => {
   if (!name) return alert('Por favor, ingresa tu nombre.');
   if (currentRating === 0) return alert('Por favor, selecciona una valoración.');
 
+  // Validación anti-XSS
+  if (contieneCodigoPeligroso(name) || contieneCodigoPeligroso(comment)) {
+    return alert('Tu valoración contiene código o caracteres no permitidos.');
+  }
+
   try {
     let photoURL = null;
 
-    // 🔹 Subida a Cloudinary
+    // Subida a Cloudinary
     if (photoFile) {
       const data = new FormData();
       data.append("file", photoFile);
@@ -202,5 +213,8 @@ if (verTodasBtn) {
     mostrandoTodas = !mostrandoTodas;
     renderReviews();
     verTodasBtn.innerText = mostrandoTodas ? "Ver menos valoraciones" : "Ver todas las valoraciones";
+  });
+}
+xt = mostrandoTodas ? "Ver menos valoraciones" : "Ver todas las valoraciones";
   });
 }
