@@ -6,3 +6,9 @@
 
 /images/*.svg
   Content-Type: image/svg+xml; charset=utf-8
+
+/images/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/multimedia/*
+  Cache-Control: public, max-age=31536000, immutable
