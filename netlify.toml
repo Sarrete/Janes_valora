@@ -19,6 +19,11 @@
     Vary = "Accept-Encoding"
     X-Content-Type-Options = "nosniff"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    # 🔒 Cabeceras de seguridad añadidas
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' 'unsafe-inline'"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
 
 # --- Cabeceras: recursos estáticos versionados ---
 [[headers]]
@@ -49,4 +54,3 @@
     sitemapPath = "/sitemap.xml"
     ignorePeriod = 3600 # 1 hora
     providers = [ "google", "yandex" ]
-
