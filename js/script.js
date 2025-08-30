@@ -103,58 +103,64 @@ miniatura1.addEventListener("click", function () {
     showMedia(currentMediaIndex, "Galería");
 });
 
-   // --- Selector de idioma ---
-if (languageIcon && languageSelector) {
-    // Mostrar/ocultar el selector al hacer clic en el icono
-    languageIcon.addEventListener('click', () => {
-        languageSelector.classList.toggle('visually-hidden');
-        if (!languageSelector.classList.contains('visually-hidden')) {
-            languageSelector.focus();
-        }
+ // Mostrar el selector al hacer clic en el icono
+    languageIcon.addEventListener('click', function () {
+        languageSelector.style.display = 'block';
     });
+
+    // Ocultar el selector al elegir un idioma
+    languageSelector.addEventListener('change', function () {
+        languageSelector.style.display = 'none';
+    });
+
+    // Función para cargar el archivo de traducción
+    const loadTranslations = (lang) => {
+        fetch(`../locales/${lang}.json`)
+            .then(response => response.json())
+            .then(translations => {
+                elementsToTranslate.forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translations[key]) {
+                        element.innerHTML = translations[key]; // Cambiado de textContent a innerHTML
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading translations:', error));
+    };
 
     // Cambiar idioma al seleccionar una opción
     languageSelector.addEventListener('change', (event) => {
         const selectedLanguage = event.target.value;
         loadTranslations(selectedLanguage);
-        languageSelector.classList.add('visually-hidden');
     });
-}
-
-// Función para cargar el archivo de traducción
-function loadTranslations(lang) {
-    fetch(`../locales/${lang}.json`)
-        .then(response => response.json())
-        .then(translations => {
-            elementsToTranslate.forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (translations[key]) {
-                    element.innerHTML = translations[key];
-                }
-            });
-        })
-        .catch(error => console.error('Error loading translations:', error));
-}
 
 // Función para detectar el idioma del navegador
 function detectarIdiomaNavegador() {
     const idioma = navigator.language || navigator.userLanguage;
-    return idioma.split('-')[0]; // es, ca, en...
+    return idioma.split('-')[0]; // Obtiene el código del idioma (es, ca, en)
 }
 
 // Función para cargar el contenido según el idioma
 function cargarContenidoPorIdioma() {
     const idioma = detectarIdiomaNavegador();
-    const lang = ['es', 'ca'].includes(idioma) ? idioma : 'en';
-    document.documentElement.lang = lang;
-    if (languageSelector) {
-        languageSelector.value = lang;
+    if (idioma === 'es') {
+        document.documentElement.lang = 'es';
+        languageSelector.value = 'es'; // Seleccionar el valor correcto en el selector
+        loadTranslations('es'); // Cargar contenido en español
+    } else if (idioma === 'ca') {
+        document.documentElement.lang = 'ca';
+        languageSelector.value = 'ca'; // Seleccionar el valor correcto en el selector
+        loadTranslations('ca'); // Cargar contenido en catalán
+    } else {
+        document.documentElement.lang = 'en';
+        languageSelector.value = 'en'; // Seleccionar el valor correcto en el selector
+        loadTranslations('en'); // Cargar contenido en inglés por defecto
     }
-    loadTranslations(lang);
 }
-
-// Cargar idioma inicial
+ 
+// Llama a la función al cargar la página
 cargarContenidoPorIdioma();
+
 
     // Función para rotar los piñones en función del desplazamiento vertical (scroll)
     function rotateGears() {
@@ -291,4 +297,5 @@ cargarContenidoPorIdioma();
         });
     });
  
+
 
