@@ -418,6 +418,3 @@ if (verTodasBtn) {
     verTodasBtn.innerText = mostrandoTodas ? "Ver menos valoraciones" : "Ver todas las valoraciones";
   });
 }
-xt = mostrandoTodas ? "Ver menos valoraciones" : "Ver todas las valoraciones";
-  });
-}
