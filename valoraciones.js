@@ -23,20 +23,6 @@ import {
   query, where, orderBy, onSnapshot
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// 2) CONFIGURACIÓN FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyCCOHmdAFNnENTFDuZIw4kb51NqfXA12DA",
-  authDomain: "valoraciones-a8350.firebaseapp.com",
-  projectId: "valoraciones-a8350",
-  storageBucket: "valoraciones-a8350.appspot.com",
-  messagingSenderId: "286602851936",
-  appId: "1:286602851936:web:e1d4d11bfe1391dd1c7505"
-};
-
-// 3) INICIALIZAR APP Y SERVICIOS
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 // 4) ELEMENTOS DOM
 const form = document.getElementById('ratingForm');
 const stars = document.querySelectorAll('#ratingStars .star');
