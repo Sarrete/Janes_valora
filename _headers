@@ -10,25 +10,38 @@
 /images/*.svg
   Content-Type: image/svg+xml; charset=utf-8
 
-# CSP fuerte para todo HTML (incluye la sección de reseñas)
+# CSP fuerte solo para HTML
 /*
-  Content-Security-Policy: default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; object-src 'none';
+  Content-Security-Policy: default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'self';
 
-# Eliminar CSP en imágenes y aplicar caché larga
+# Imágenes - sin CSP, sin X-Frame-Options, caché larga
 /images/*
   Content-Security-Policy:
-  Cache-Control: public, max-age=31536000, immutable
-/images/*/*
-  Content-Security-Policy:
-  Cache-Control: public, max-age=31536000, immutable
-/images/*/*/*
-  Content-Security-Policy:
-  Cache-Control: public, max-age=31536000, immutable
-/images/*/*/*/*
-  Content-Security-Policy:
+  X-Frame-Options:
   Cache-Control: public, max-age=31536000, immutable
 
-# Eliminar CSP en multimedia y aplicar caché larga
+/images/*/*
+  Content-Security-Policy:
+  X-Frame-Options:
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*/*/*
+  Content-Security-Policy:
+  X-Frame-Options:
+  Cache-Control: public, max-age=31536000, immutable
+
+/images/*/*/*/*
+  Content-Security-Policy:
+  X-Frame-Options:
+  Cache-Control: public, max-age=31536000, immutable
+
+# Multimedia - sin CSP, sin X-Frame-Options, caché larga
 /multimedia/*
   Content-Security-Policy:
+  X-Frame-Options:
+  Cache-Control: public, max-age=31536000, immutable
+
+/multimedia/*/*
+  Content-Security-Policy:
+  X-Frame-Options:
   Cache-Control: public, max-age=31536000, immutable
