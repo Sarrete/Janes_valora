@@ -64,52 +64,25 @@ header {
     justify-content: space-between; /* Distribuye el título y el selector */
     align-items: center;
 } 
+
 .language-selector-container {
-  position: relative;
-  display: inline-block;
-}
+ position: relative;
+ display: inline-block;
+ }
 
 #language-icon {
-  width: 40px;
-  height: auto;
-  cursor: pointer;
-}
+ width: 40px; /* Ajusta el tamaño del icono */
+ height: auto;
+ cursor: pointer;
+ }
 
-/* Oculta el select visualmente pero lo mantiene accesible */
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
+#language-selector {
+ display: none; /* Oculto por defecto */
+ }
 
-/* Cuando se active la clase .show-select, el select vuelve a su posición normal */
-.show-select .visually-hidden {
-  position: static;
-  width: auto;
-  height: auto;
-  margin: 0;
-  clip: auto;
-  white-space: normal;
-}
-
-/* Oculta el label solo para lectores de pantalla */
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
-}
+.show-select #language-selector {
+ display: block; /* Mostrar cuando se haga clic */
+ }
 
 /* Icono del men  hamburguesa */
 .menu-icon {
@@ -930,6 +903,7 @@ button:hover {
   pointer-events: none !important; /* No capturan clics en ninguna pantalla */
   z-index: 0 !important;           /* Se mantienen siempre al fondo */
 }
+
 
 
 
