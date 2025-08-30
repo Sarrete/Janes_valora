@@ -69,23 +69,33 @@
   
 <body>
   
-    <div class="container">
-        <header>
-            <div class="menu-icon" id="menu-icon">   <!-- Icono del menú hamburguesa (a la izquierda) -->
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <h1>JANÉS ENGINYERIA</h1>
-            <div class="language-selector-container">
-                <img src="images/icono.svg" alt="Select" id="language-icon">
-                <select id="language-selector" class="hidden">
-                    <option data-i18n="idioma_ca" value="ca">Catalan</option>
-                    <option data-i18n="idioma_es" value="es">Español</option>
-                    <option data-i18n="idioma_en" value="en">English</option>
-                </select>
-            </div>
-        </header>
+   <div class="container">
+    <header>
+        <div class="menu-icon" id="menu-icon"> <!-- Icono del menú hamburguesa (a la izquierda) -->
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <h1>JANÉS ENGINYERIA</h1>
+
+        <div class="language-selector-container">
+            <!-- Icono del mundo -->
+            <img src="images/icono.svg" alt="Cambiar idioma" id="language-icon">
+
+            <!-- Label oculto solo para lectores de pantalla -->
+            <label for="language-selector" class="sr-only">Seleccionar idioma</label>
+
+            <!-- Select accesible pero oculto visualmente -->
+            <select id="language-selector" aria-label="Seleccionar idioma" class="visually-hidden">
+                <option data-i18n="idioma_ca" value="ca">Catalan</option>
+                <option data-i18n="idioma_es" value="es">Español</option>
+                <option data-i18n="idioma_en" value="en">English</option>
+            </select>
+        </div>
+    </header>
+</div>
+
  
        <!-- Menú lateral desplegable al hacer clic -->
         <nav class="menu" id="menu">
@@ -316,6 +326,7 @@
 
 </body>
 </html>
+
 
 
 
