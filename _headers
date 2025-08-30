@@ -1,0 +1,8 @@
+/sitemap.xml
+  Content-Type: application/xml
+
+/locales/*.json
+  Content-Type: application/json; charset=utf-8
+
+/images/*.svg
+  Content-Type: image/svg+xml; charset=utf-8
