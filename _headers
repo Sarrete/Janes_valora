@@ -13,35 +13,60 @@
 # CSP fuerte solo para HTML
 /*
   Content-Security-Policy: default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'self';
+  X-Content-Type-Options: nosniff
 
-# Imágenes - sin CSP, sin X-Frame-Options, caché larga
+# Imágenes - sin CSP, sin X-Frame-Options, sin cabeceras obsoletas, caché larga
 /images/*
   Content-Security-Policy:
   X-Frame-Options:
+  X-Content-Security-Policy:
+  X-XSS-Protection:
+  X-Content-Type-Options: nosniff
+  Expires:
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*/*
   Content-Security-Policy:
   X-Frame-Options:
+  X-Content-Security-Policy:
+  X-XSS-Protection:
+  X-Content-Type-Options: nosniff
+  Expires:
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*/*/*
   Content-Security-Policy:
   X-Frame-Options:
+  X-Content-Security-Policy:
+  X-XSS-Protection:
+  X-Content-Type-Options: nosniff
+  Expires:
   Cache-Control: public, max-age=31536000, immutable
 
 /images/*/*/*/*
   Content-Security-Policy:
   X-Frame-Options:
+  X-Content-Security-Policy:
+  X-XSS-Protection:
+  X-Content-Type-Options: nosniff
+  Expires:
   Cache-Control: public, max-age=31536000, immutable
 
-# Multimedia - sin CSP, sin X-Frame-Options, caché larga
+# Multimedia - sin CSP, sin X-Frame-Options, sin cabeceras obsoletas, caché larga
 /multimedia/*
   Content-Security-Policy:
   X-Frame-Options:
+  X-Content-Security-Policy:
+  X-XSS-Protection:
+  X-Content-Type-Options: nosniff
+  Expires:
   Cache-Control: public, max-age=31536000, immutable
 
 /multimedia/*/*
   Content-Security-Policy:
   X-Frame-Options:
+  X-Content-Security-Policy:
+  X-XSS-Protection:
+  X-Content-Type-Options: nosniff
+  Expires:
   Cache-Control: public, max-age=31536000, immutable
