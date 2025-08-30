@@ -10,9 +10,16 @@
 /images/*.svg
   Content-Type: image/svg+xml; charset=utf-8
 
+# Caché para cualquier archivo dentro de /images/, sin importar extensión ni profundidad
 /images/*
   Cache-Control: public, max-age=31536000, immutable
-
-/multimedia/*
+/images/*/*
+  Cache-Control: public, max-age=31536000, immutable
+/images/*/*/*
+  Cache-Control: public, max-age=31536000, immutable
+/images/*/*/*/*
   Cache-Control: public, max-age=31536000, immutable
 
+# Caché para multimedia (vídeos, etc.)
+/multimedia/*
+  Cache-Control: public, max-age=31536000, immutable
