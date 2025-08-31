@@ -243,7 +243,7 @@
 
   <!-- Botón ver todas -->
   <div id="reviews-controls" style="text-align:center; margin-top:1rem;">
-    <button id="verTodasBtn">Ver todas las valoraciones</button>
+    <button id="verTodasBtn" type="button">ver todas las valoraciones</button>
   </div>
 </section>
 
@@ -263,8 +263,8 @@
             </div> -->
 
             <div class="info-item">
-                <button onclick="window.location.href='mailto:janesenginyeria@gmail.com'" class="email-button">
-                    <strong data-i18n="contacto_correo">Correo:</strong> janesenginyeria@gmail.com
+              <button type="button" onclick="window.location.href='mailto:janesenginyeria@gmail.com'" class="email-button"></button>                <button type="button" onclick="window.location.href='mailto:janesenginyeria@gmail.com';" class="email-btn"></button>
+                  <strong data-i18n="contacto_correo">Correo:</strong> janesenginyeria@gmail.com
                 </button>
             </div>
     </div>
@@ -290,8 +290,11 @@
     </figure>    
 
         <!-- Flechas de navegación -->
-        <button id="prev" class="popup-arrow">&#10094;</button>
-        <button id="next" class="popup-arrow">&#10095;</button>
+       <!-- Flecha para imagen anterior -->
+      <button id="prev" class="popup-arrow" type="button">&#10094;</button>
+<!-- Flecha para imagen siguiente -->
+      <button id="next" class="popup-arrow" type="button">&#10095;</button>
+
         
     </div>
    </div>
@@ -316,6 +319,7 @@
 
 </body>
 </html>
+
 
 
 
