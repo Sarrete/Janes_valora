@@ -14,79 +14,23 @@
 /*
   Content-Security-Policy: default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'self';
   X-Content-Type-Options: nosniff
-  X-Content-Security-Policy:
-  X-XSS-Protection:
-  Expires:
 
-# Imágenes - sin CSP, sin X-Frame-Options, sin cabeceras obsoletas, caché larga
+# Imágenes
 /images/*
-  Content-Security-Policy:
-  X-Frame-Options:
-  X-Content-Security-Policy:
-  X-XSS-Protection:
   X-Content-Type-Options: nosniff
-  Expires:
   Cache-Control: public, max-age=31536000, immutable
 
-/images/*/*
-  Content-Security-Policy:
-  X-Frame-Options:
-  X-Content-Security-Policy:
-  X-XSS-Protection:
-  X-Content-Type-Options: nosniff
-  Expires:
-  Cache-Control: public, max-age=31536000, immutable
-
-/images/*/*/*
-  Content-Security-Policy:
-  X-Frame-Options:
-  X-Content-Security-Policy:
-  X-XSS-Protection:
-  X-Content-Type-Options: nosniff
-  Expires:
-  Cache-Control: public, max-age=31536000, immutable
-
-/images/*/*/*/*
-  Content-Security-Policy:
-  X-Frame-Options:
-  X-Content-Security-Policy:
-  X-XSS-Protection:
-  X-Content-Type-Options: nosniff
-  Expires:
-  Cache-Control: public, max-age=31536000, immutable
-
-# Multimedia - sin CSP, sin X-Frame-Options, sin cabeceras obsoletas, caché larga
+# Multimedia
 /multimedia/*
-  Content-Security-Policy:
-  X-Frame-Options:
-  X-Content-Security-Policy:
-  X-XSS-Protection:
   X-Content-Type-Options: nosniff
-  Expires:
   Cache-Control: public, max-age=31536000, immutable
 
-/multimedia/*/*
-  Content-Security-Policy:
-  X-Frame-Options:
-  X-Content-Security-Policy:
-  X-XSS-Protection:
-  X-Content-Type-Options: nosniff
-  Expires:
-  Cache-Control: public, max-age=31536000, immutable
-
-# CSS y JS - caché larga y cabeceras modernas
+# CSS
 /css/*
-  X-Frame-Options:
-  X-Content-Security-Policy:
-  X-XSS-Protection:
   X-Content-Type-Options: nosniff
-  Expires:
   Cache-Control: public, max-age=31536000, immutable
 
+# JS
 /js/*
-  X-Frame-Options:
-  X-Content-Security-Policy:
-  X-XSS-Protection:
   X-Content-Type-Options: nosniff
-  Expires:
   Cache-Control: public, max-age=31536000, immutable
