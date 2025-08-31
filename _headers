@@ -10,27 +10,28 @@
 /images/*.svg
   Content-Type: image/svg+xml; charset=utf-8
 
-# CSP fuerte solo para HTML
+# HTML: no se debe cachear, siempre verificar cambios
 /*
+  Cache-Control: no-cache
   Content-Security-Policy: default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'self';
   X-Content-Type-Options: nosniff
 
-# Imágenes
+# Imágenes - cache largo
 /images/*
   X-Content-Type-Options: nosniff
   Cache-Control: public, max-age=31536000, immutable
 
-# Multimedia
+# Multimedia - cache largo
 /multimedia/*
   X-Content-Type-Options: nosniff
   Cache-Control: public, max-age=31536000, immutable
 
-# CSS
+# CSS - cache largo
 /css/*
   X-Content-Type-Options: nosniff
   Cache-Control: public, max-age=31536000, immutable
 
-# JS
+# JS - cache largo
 /js/*
   X-Content-Type-Options: nosniff
   Cache-Control: public, max-age=31536000, immutable
