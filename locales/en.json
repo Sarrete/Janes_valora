@@ -37,15 +37,22 @@
   "a_medida_realizamos_titulo": "We Execute:",
   "a_medida_realizamos_desc": "We turn your concepts into reality.",
   "a_medida_parrafo_3": "We are passionate about what we do and it shows in every project we take on. Together, we create impactful solutions.",
-    "reviews.title": "Leave your review",
-    "reviews.name": "Name:",
-    "reviews.placeholderName": "Your name (max. 50 characters)",
-    "reviews.rating": "Rating:",
-    "reviews.comment": "Comment:",
-    "reviews.placeholderComment": "Write your comment (max. 500 characters)",
-    "reviews.photo": "Photo (optional):",
-    "reviews.submit": "Submit review",
-    "reviews.viewAll": "View all reviews",
+  "reviews.title": "Leave your review",
+  "reviews.name": "Name:",
+  "reviews.placeholderName": "Your name (max 50 characters)",
+  "reviews.rating": "Rating:",
+  "reviews.comment": "Comment:",
+  "reviews.placeholderComment": "Write your comment (max 500 characters)",
+  "reviews.photo": "Photo (optional):",
+  "reviews.submit": "Submit review",
+  "reviews.viewMore": "View more",
+  "reviews.viewLess": "View less",
+  "reviews.viewAll": "View all reviews",
+  "reviews.viewAllLess": "View fewer reviews",
+  "reviews.loading": "Loading reviews...",
+  "reviews.noData": "No approved reviews yet.",
+  "reviews.noComment": "No comment",
+  "reviews.photoAlt": "Review photo",
   "contacto_titulo": "Contact",
   "contacto_parrafo": "Ready to take the next step? Get in touch with us today!",
   "contacto_parrafo_1": "Contact us",
@@ -55,6 +62,7 @@
   "popup_video_error": "Your browser does not support the video.",
   "footer_texto": "© 2024 JANÉS ENGINYERIA. All rights reserved."
 }
+
 
 
 
