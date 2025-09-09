@@ -26,7 +26,7 @@ const reviewsContainer = document.getElementById('reviews');
 const verTodasBtn = document.getElementById('verTodasBtn');
 let currentRating = 0;
 
-// Mensaje inicial
+// Mensaje inicial (fallback; se traducirá al cargar i18n)
 reviewsContainer.innerHTML = '<p class="loading">Cargando valoraciones...</p>';
 
 // 5) ESTRELLAS INTERACTIVAS
@@ -46,73 +46,73 @@ function contieneCodigoPeligroso(texto) {
   return patron.test(texto);
 }
 
-// 7) FUNCIONES DE TRADUCCIÓN
-let translations = {}; // Se llena al cargar el JSON
+// 7) I18N
+let translations = {};
+
+function traducirPlaceholders() {
+  document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-i18n-placeholder");
+    const val = key.split('.').reduce((o, i) => o?.[i], translations);
+    if (val) el.setAttribute("placeholder", val);
+  });
+}
+
+function traducirBotonesDinamicos() {
+  // Ver más / Ver menos en tarjetas
+  document.querySelectorAll(".ver-mas").forEach(btn => {
+    const more = translations?.reviews?.viewMore || "Ver más";
+    const less = translations?.reviews?.viewLess || "Ver menos";
+    btn.innerText = btn.dataset.state === "less" ? less : more;
+  });
+
+  // Botón global Ver todas / Ver menos
+  if (verTodasBtn) {
+    const mostrando = verTodasBtn.dataset.mostrando === "true";
+    verTodasBtn.textContent = mostrando
+      ? (translations?.reviews?.viewLess || "Ver menos")
+      : (translations?.reviews?.viewAll || "Ver todas las valoraciones");
+  }
+
+  // Mensajes estáticos del contenedor (si existen)
+  const loadingEl = reviewsContainer.querySelector(".loading");
+  if (loadingEl) loadingEl.textContent = translations?.reviews?.loading || "Cargando valoraciones...";
+  const noDataEl = reviewsContainer.querySelector(".no-data");
+  if (noDataEl) noDataEl.textContent = translations?.reviews?.noData || "No hay valoraciones aprobadas todavía.";
+}
 
 async function cargarTraducciones(lang = "es") {
   try {
-    // Ruta relativa a la raíz del sitio
     const res = await fetch(`/locales/${lang}.json`);
     translations = await res.json();
 
-    // Traducción de textos [data-i18n]
+    // Textos con data-i18n
     document.querySelectorAll("[data-i18n]").forEach(el => {
       const key = el.getAttribute("data-i18n");
       const val = key.split('.').reduce((o, i) => o?.[i], translations);
       if (val) el.textContent = val;
     });
 
-    // Traducción de placeholders [data-i18n-placeholder]
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
-      const key = el.getAttribute("data-i18n-placeholder");
-      const val = key.split('.').reduce((o, i) => o?.[i], translations);
-      if (val) el.setAttribute("placeholder", val);
-    });
+    // Placeholders
+    traducirPlaceholders();
 
-    // Ajuste explícito del botón "Ver todas" (fallback seguro)
-    if (verTodasBtn) {
-      verTodasBtn.textContent = translations?.reviews?.viewAll || "Ver todas las valoraciones";
-    }
+    // Botones y estados dinámicos
+    traducirBotonesDinamicos();
+
   } catch (err) {
     console.error("Error cargando traducciones:", err);
-  }
-}
-
-// Traduce botones dinámicos "Ver más / Ver menos" y el botón de ver todas
-function traducirBotonesDinamicos() {
-  // Botones dentro de cada reseña
-  document.querySelectorAll(".ver-mas").forEach(btn => {
-    // Fallbacks seguros
-    const more = translations?.reviews?.viewMore || "Ver más";
-    const less = translations?.reviews?.viewLess || "Ver menos";
-
-    // Normaliza el texto según el estado actual del párrafo
-    if (btn.dataset.state === "less") {
-      btn.innerText = less;
-    } else {
-      btn.innerText = more;
-    }
-  });
-
-  // Botón "Ver todas" (no concatenar "valoraciones")
-  if (verTodasBtn) {
-    const mostrandoTodas = verTodasBtn.dataset.mostrando === "true";
-    verTodasBtn.textContent = mostrandoTodas
-      ? (translations?.reviews?.viewLess || "Ver menos")
-      : (translations?.reviews?.viewAll || "Ver todas las valoraciones");
   }
 }
 
 // Detectar idioma del navegador
 function detectarIdiomaNavegador() {
   const idioma = navigator.language || navigator.userLanguage;
-  return idioma.split('-')[0];
+  return (idioma || "es").split('-')[0];
 }
 
 // Ejecutar traducciones al cargar
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const lang = detectarIdiomaNavegador();
-  cargarTraducciones(lang);
+  await cargarTraducciones(lang);
 });
 
 // 8) ENVÍO FORMULARIO
@@ -143,7 +143,7 @@ form.addEventListener('submit', async (e) => {
 
     await addDoc(collection(db, 'valoraciones'), {
       nombre: name,
-      comentario: comment || 'Sin comentario',
+      comentario: comment || (translations?.reviews?.noComment || 'Sin comentario'),
       rating: currentRating,
       photoURL: photoURL || null,
       timestamp: serverTimestamp(),
@@ -157,7 +157,7 @@ form.addEventListener('submit', async (e) => {
 
   } catch (err) {
     console.error(err);
-    alert(translations?.reviews?.alertError || 'Error al enviar la valoración: ' + (err?.message || err));
+    alert(translations?.reviews?.alertError || ('Error al enviar la valoración: ' + (err?.message || err)));
   }
 });
 
@@ -178,7 +178,7 @@ onSnapshot(q, (snapshot) => {
     if (!data?.nombre || typeof data.rating !== 'number') return;
     nuevas.push({
       nombre: data.nombre,
-      comentario: data.comentario || 'Sin comentario',
+      comentario: data.comentario || (translations?.reviews?.noComment || 'Sin comentario'),
       rating: data.rating,
       photoURL: data.photoURL || null
     });
@@ -186,7 +186,9 @@ onSnapshot(q, (snapshot) => {
 
   todasLasReseñas = nuevas;
   if (todasLasReseñas.length > 0) renderReviews();
-  else reviewsContainer.innerHTML = '<p class="no-data">No hay valoraciones aprobadas todavía.</p>';
+  else {
+    reviewsContainer.innerHTML = `<p class="no-data">${translations?.reviews?.noData || "No hay valoraciones aprobadas todavía."}</p>`;
+  }
 });
 
 // 10) RENDER DE RESEÑAS
@@ -198,7 +200,7 @@ function renderReviews() {
     const div = document.createElement("div");
     div.classList.add("review-card");
 
-    const comentarioSeguro = String(r.comentario || 'Sin comentario');
+    const comentarioSeguro = String(r.comentario || (translations?.reviews?.noComment || 'Sin comentario'));
     const textoCorto = comentarioSeguro.length > 120 ? comentarioSeguro.slice(0, 120) + "..." : comentarioSeguro;
 
     // Nombre
@@ -222,7 +224,7 @@ function renderReviews() {
     if (comentarioSeguro.length > 120) {
       const btnVerMas = document.createElement("button");
       btnVerMas.classList.add("ver-mas");
-      btnVerMas.dataset.state = "more"; // estado inicial
+      btnVerMas.dataset.state = "more";
       btnVerMas.innerText = translations?.reviews?.viewMore || "Ver más";
 
       btnVerMas.addEventListener("click", () => {
@@ -252,7 +254,7 @@ function renderReviews() {
     reviewsContainer.appendChild(div);
   });
 
-  // Traducir botones dinámicos cada render (por si cambió el idioma)
+  // Actualiza textos dinámicos tras render
   traducirBotonesDinamicos();
 }
 
@@ -263,4 +265,8 @@ if (verTodasBtn) {
     verTodasBtn.dataset.mostrando = mostrandoTodas ? "true" : "false";
     renderReviews();
   });
+
+  // Estado inicial del botón (por si se pinta antes de traducciones)
+  verTodasBtn.dataset.mostrando = "false";
+  verTodasBtn.textContent = translations?.reviews?.viewAll || "Ver todas las valoraciones";
 }
