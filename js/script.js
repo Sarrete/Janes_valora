@@ -1,12 +1,10 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Selecciona los elementos de los piñones y el menú
+    // --- Elementos comunes ---
     const leftGear = document.querySelector(".gears-left");
     const rightGear = document.querySelector(".gears-right");
     const menuIcon = document.getElementById("menu-icon");
     const menu = document.getElementById("menu");
     const popup = document.getElementById("popup");
-    const popupContent = document.querySelector(".popup-content");
-    const closePopup = document.getElementById("close-popup");
     const popupImage = document.getElementById("popup-image");
     const popupCaption = document.getElementById("popup-caption");
     const popupVideo = document.getElementById("popup-video");
@@ -18,17 +16,68 @@ document.addEventListener("DOMContentLoaded", function () {
     const languageSelector = document.getElementById('language-selector');
     const elementsToTranslate = document.querySelectorAll('[data-i18n]');
 
-    
-        let currentMediaIndex = 0;
-        let currentMedia = [];
-        let isVideo = false;
-        
-function cargarContenidoPorIdioma() {
-    const idioma = detectarIdiomaNavegador();
-    document.documentElement.lang = idioma;
-    languageSelector.value = idioma; 
-    loadTranslations(idioma);
-}
+    let currentMediaIndex = 0;
+    let currentMedia = [];
+    let isVideo = false;
+
+    // --- Función para cargar traducciones ---
+    const loadTranslations = (lang) => {
+        fetch(`../locales/${lang}.json`)
+            .then(response => response.json())
+            .then(translations => {
+                window.translations = translations;
+
+                // Traducción de textos normales
+                elementsToTranslate.forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    if (translations[key]) {
+                        element.innerHTML = translations[key];
+                    }
+                });
+
+                // Traducción de placeholders
+                document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                    const key = el.getAttribute('data-i18n-placeholder');
+                    if (translations[key]) {
+                        el.setAttribute('placeholder', translations[key]);
+                    }
+                });
+
+                // Avisar a valoraciones.js que ya hay traducciones
+                document.dispatchEvent(new Event('translationsLoaded'));
+            })
+            .catch(error => console.error('Error loading translations:', error));
+    };
+
+    // --- Detectar idioma del navegador ---
+    function detectarIdiomaNavegador() {
+        const idioma = navigator.language || navigator.userLanguage;
+        return idioma.split('-')[0];
+    }
+
+    // --- Cargar contenido según idioma ---
+    function cargarContenidoPorIdioma() {
+        const idioma = detectarIdiomaNavegador();
+        document.documentElement.lang = idioma;
+        languageSelector.value = idioma;
+        loadTranslations(idioma);
+    }
+
+    // --- Eventos de idioma ---
+    languageIcon.addEventListener('click', () => {
+        languageSelector.style.display = 'block';
+    });
+
+    languageSelector.addEventListener('change', (event) => {
+        languageSelector.style.display = 'none';
+        loadTranslations(event.target.value);
+    });
+
+    // --- Inicializar idioma ---
+    cargarContenidoPorIdioma();
+
+    // --- Aquí dejas el resto de tu código de miniaturas, popup, engranajes, etc. ---
+});
              
         
   // --- Función para la Miniatura Dinámica ---
@@ -112,74 +161,6 @@ miniatura1.addEventListener("click", function () {
     languageSelector.addEventListener('change', function () {
         languageSelector.style.display = 'none';
     });
-
-// Función para cargar el archivo de traducción
-const loadTranslations = (lang) => {
-   fetch(`../locales/${lang}.json`)
-    .then(response => response.json())
-    .then(translations => {
-        // Guardar traducciones globalmente
-        window.translations = translations;
-
-        // Traducción de textos normales
-        elementsToTranslate.forEach(element => {
-            const key = element.getAttribute('data-i18n');
-            if (translations[key]) {
-                element.innerHTML = translations[key];
-            }
-        });
-
-        // Traducción de placeholders
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-i18n-placeholder');
-            if (translations[key]) {
-                el.setAttribute('placeholder', translations[key]);
-            }
-        });
-
-        // 🔹 Si existe renderReviews, volver a pintar reseñas con el idioma correcto
-        if (typeof renderReviews === 'function') {
-            renderReviews();
-        }
-    })
-    .catch(error => console.error('Error loading translations:', error));
-
-};
-
-
-// Cambiar idioma al seleccionar una opción
-languageSelector.addEventListener('change', (event) => {
-    const selectedLanguage = event.target.value;
-    loadTranslations(selectedLanguage);
-});
-
-// Función para detectar el idioma del navegador
-function detectarIdiomaNavegador() {
-    const idioma = navigator.language || navigator.userLanguage;
-    return idioma.split('-')[0]; // Obtiene el código del idioma (es, ca, en)
-}
-
-// Función para cargar el contenido según el idioma
-function cargarContenidoPorIdioma() {
-    const idioma = detectarIdiomaNavegador();
-    if (idioma === 'es') {
-        document.documentElement.lang = 'es';
-        languageSelector.value = 'es';
-        loadTranslations('es');
-    } else if (idioma === 'ca') {
-        document.documentElement.lang = 'ca';
-        languageSelector.value = 'ca';
-        loadTranslations('ca');
-    } else {
-        document.documentElement.lang = 'en';
-        languageSelector.value = 'en';
-        loadTranslations('en');
-    }
-}
-
-// Llama a la función al cargar la página
-cargarContenidoPorIdioma();
-
 
     // Función para rotar los piñones en función del desplazamiento vertical (scroll)
     function rotateGears() {
@@ -316,6 +297,7 @@ cargarContenidoPorIdioma();
         });
     });
  
+
 
 
 
