@@ -1,4 +1,3 @@
-// ------------------------------
 // 1) IMPORTS FIREBASE
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
@@ -20,7 +19,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// ------------------------------
 // 4) ELEMENTOS DOM
 const form = document.getElementById('ratingForm');
 const stars = document.querySelectorAll('#ratingStars .star');
@@ -29,9 +27,8 @@ const verTodasBtn = document.getElementById('verTodasBtn');
 let currentRating = 0;
 
 // Mensaje de carga inicial
-reviewsContainer.innerHTML = `<p class="loading">${i18next.t('reviews.loading','Cargando valoraciones...')}</p>`;
+reviewsContainer.innerHTML = '<p class="loading">Cargando valoraciones...</p>';
 
-// ------------------------------
 // 5) ESTRELLAS INTERACTIVAS
 function updateStars(rating) {
   stars.forEach((star, idx) => {
@@ -49,15 +46,13 @@ stars.forEach((star, idx) => {
   });
 });
 
-// ------------------------------
-// 6) VALIDACIÓN ANTI-XSS
+// 🔹 Función para detectar código malicioso
 function contieneCodigoPeligroso(texto) {
   const patron = /<\s*script|onerror\s*=|onload\s*=|javascript:|<\s*iframe|<\s*img|<\s*svg/i;
   return patron.test(texto);
 }
 
-// ------------------------------
-// 7) ENVÍO DEL FORMULARIO (Firebase intacto)
+// 6) ENVÍO DEL FORMULARIO
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -65,20 +60,22 @@ form.addEventListener('submit', async (e) => {
   const comment = document.getElementById('comment').value.trim();
   const photoFile = document.getElementById('photo').files[0];
 
-  if (!name) return alert(i18next.t('reviews.alertName','Por favor, ingresa tu nombre.'));
-  if (currentRating === 0) return alert(i18next.t('reviews.alertRating','Por favor, selecciona una valoración.'));
+  if (!name) return alert('Por favor, ingresa tu nombre.');
+  if (currentRating === 0) return alert('Por favor, selecciona una valoración.');
 
+  // Validación anti-XSS
   if (contieneCodigoPeligroso(name) || contieneCodigoPeligroso(comment)) {
-    return alert(i18next.t('reviews.alertCode','Tu valoración contiene código o caracteres no permitidos.'));
+    return alert('Tu valoración contiene código o caracteres no permitidos.');
   }
 
   try {
     let photoURL = null;
 
+    // Subida a Cloudinary
     if (photoFile) {
       const data = new FormData();
       data.append("file", photoFile);
-      data.append("upload_preset", "valoraciones_janes");
+      data.append("upload_preset", "valoraciones_janes"); // preset unsigned
       data.append("folder", "valoraciones");
 
       const res = await fetch("https://api.cloudinary.com/v1_1/dcsez2e0d/image/upload", {
@@ -93,63 +90,73 @@ form.addEventListener('submit', async (e) => {
 
     await addDoc(collection(db, 'valoraciones'), {
       nombre: name,
-      comentario: comment || i18next.t('reviews.noComment','Sin comentario'),
+      comentario: comment || 'Sin comentario',
       rating: currentRating,
       photoURL: photoURL || null,
       timestamp: serverTimestamp(),
       aprobado: false
     });
 
-    alert(i18next.t('reviews.sent','Valoración enviada. Se revisará antes de publicarse.'));
+    alert('Valoración enviada. Se revisará antes de publicarse.');
     form.reset();
     currentRating = 0;
     updateStars(0);
 
   } catch (err) {
     console.error(err);
-    alert(i18next.t('reviews.error','Error al enviar la valoración: ') + (err?.message || err));
+    alert('Error al enviar la valoración: ' + (err?.message || err));
   }
 });
 
-// ------------------------------
-// 8) ESCUCHA EN TIEMPO REAL — SOLO RESEÑAS APROBADAS (Firebase intacto)
+// 7) ESCUCHA EN TIEMPO REAL — SOLO RESEÑAS APROBADAS
+const q = query(
+  collection(db, 'valoraciones'),
+  where('aprobado', '==', true),
+  orderBy('timestamp', 'desc')
+);
+
 let todasLasReseñas = [];
 let mostrandoTodas = false;
 
-onSnapshot(
-  query(collection(db, 'valoraciones'), where('aprobado', '==', true), orderBy('timestamp','desc')),
-  (snapshot) => {
-    const nuevas = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      if (!data?.nombre || typeof data.rating !== 'number') return;
+onSnapshot(q, (snapshot) => {
+  const nuevas = [];
 
-      nuevas.push({
-        nombre: data.nombre,
-        comentario: data.comentario || i18next.t('reviews.noComment','Sin comentario'),
-        rating: data.rating,
-        photoURL: data.photoURL || null
-      });
+  snapshot.forEach(doc => {
+    const data = doc.data();
+
+    if (!data?.nombre || typeof data.rating !== 'number') return;
+
+    nuevas.push({
+      nombre: data.nombre,
+      comentario: data.comentario || 'Sin comentario',
+      rating: data.rating,
+      photoURL: data.photoURL || null
     });
+  });
 
-    todasLasReseñas = nuevas;
-    if (todasLasReseñas.length > 0) renderReviews();
-    else reviewsContainer.innerHTML = `<p class="no-data">${i18next.t('reviews.noReviews','No hay valoraciones aprobadas todavía.')}</p>`;
+  todasLasReseñas = nuevas;
+
+  if (todasLasReseñas.length > 0) {
+    renderReviews();
+  } else {
+    reviewsContainer.innerHTML = '<p class="no-data">No hay valoraciones aprobadas todavía.</p>';
   }
-);
+});
 
-// ------------------------------
-// 9) RENDER DE RESEÑAS CON BOTONES TRADUCIBLES
+// 8) RENDER DE RESEÑAS SEGURO
 function renderReviews() {
   reviewsContainer.innerHTML = "";
+
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
 
   lista.forEach(r => {
     const div = document.createElement("div");
     div.classList.add("review-card");
 
-    const comentarioSeguro = String(r.comentario);
-    const textoCorto = comentarioSeguro.length > 120 ? comentarioSeguro.slice(0,120) + "..." : comentarioSeguro;
+    const comentarioSeguro = String(r.comentario || 'Sin comentario');
+    const textoCorto = comentarioSeguro.length > 120
+      ? comentarioSeguro.slice(0, 120) + "..."
+      : comentarioSeguro;
 
     // Nombre
     const h3 = document.createElement("h3");
@@ -172,26 +179,26 @@ function renderReviews() {
     if (comentarioSeguro.length > 120) {
       const btnVerMas = document.createElement("button");
       btnVerMas.classList.add("ver-mas");
-      btnVerMas.innerText = i18next.t('reviews.viewMore','Ver más');
+      btnVerMas.innerText = "Ver más";
 
       btnVerMas.addEventListener("click", () => {
         if (p.innerText.endsWith("...")) {
           p.innerText = comentarioSeguro;
-          btnVerMas.innerText = i18next.t('reviews.viewLess','Ver menos');
+          btnVerMas.innerText = "Ver menos";
         } else {
           p.innerText = textoCorto;
-          btnVerMas.innerText = i18next.t('reviews.viewMore','Ver más');
+          btnVerMas.innerText = "Ver más";
         }
       });
 
       div.appendChild(btnVerMas);
     }
 
-    // Imagen
+    // Imagen segura
     if (r.photoURL) {
       const img = document.createElement("img");
       img.src = r.photoURL;
-      img.alt = i18next.t('reviews.photoAlt','Foto valoración');
+      img.alt = "Foto valoración";
       img.loading = "lazy";
       div.appendChild(img);
     }
@@ -200,28 +207,13 @@ function renderReviews() {
   });
 }
 
-// ------------------------------
-// 10) BOTÓN "VER TODAS" CON TRADUCCIÓN
+// 9) BOTÓN "VER TODAS"
 if (verTodasBtn) {
   verTodasBtn.addEventListener("click", () => {
     mostrandoTodas = !mostrandoTodas;
     renderReviews();
     verTodasBtn.innerText = mostrandoTodas
-      ? i18next.t('reviews.viewLessAll','Ver menos valoraciones')
-      : i18next.t('reviews.viewAll','Ver todas las valoraciones');
+      ? "Ver menos valoraciones"
+      : "Ver todas las valoraciones";
   });
-}
-
-// ------------------------------
-// 11) FUNCION PARA TRADUCIR PLACEHOLDERS Y LABELS
-function traducirValoraciones() {
-  document.querySelector('[data-i18n="reviews.title"]').innerText = i18next.t('reviews.title');
-  document.querySelector('[data-i18n="reviews.name"]').innerText = i18next.t('reviews.name');
-  document.querySelector('[data-i18n="reviews.rating"]').innerText = i18next.t('reviews.rating');
-  document.querySelector('[data-i18n="reviews.comment"]').innerText = i18next.t('reviews.comment');
-  document.querySelector('[data-i18n="reviews.photo"]').innerText = i18next.t('reviews.photo');
-  document.querySelector('[data-i18n="reviews.submit"]').innerText = i18next.t('reviews.submit');
-  document.querySelector('[data-i18n-placeholder="reviews.placeholderName"]').placeholder = i18next.t('reviews.placeholderName');
-  document.querySelector('[data-i18n-placeholder="reviews.placeholderComment"]').placeholder = i18next.t('reviews.placeholderComment');
-  document.querySelector('[data-i18n="reviews.viewAll"]').innerText = i18next.t('reviews.viewAll');
 }
