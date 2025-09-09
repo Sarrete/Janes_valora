@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const videoCaption = document.getElementById("popup-video-caption");
     const prevBtn = document.getElementById("prev");
     const nextBtn = document.getElementById("next");
+    const closePopup = document.getElementById("close-popup");
     const languageIcon = document.getElementById('language-icon');
     const languageSelector = document.getElementById('language-selector');
     const elementsToTranslate = document.querySelectorAll('[data-i18n]');
@@ -247,3 +248,4 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault(); // Evita el scroll de fondo
     });
 });
+
