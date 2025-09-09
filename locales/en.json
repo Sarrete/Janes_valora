@@ -45,7 +45,7 @@
     "placeholderComment": "Write your comment (max. 500 characters)",
     "photo": "Photo (optional):",
     "submit": "Submit review",
-    "viewAll": "View all reviews"
+    "viewAll": "View all reviews",
   "contacto_titulo": "Contact",
   "contacto_parrafo": "Ready to take the next step? Get in touch with us today!",
   "contacto_parrafo_1": "Contact us",
@@ -55,4 +55,5 @@
   "popup_video_error": "Your browser does not support the video.",
   "footer_texto": "© 2024 JANÉS ENGINYERIA. All rights reserved."
 }
+
 
