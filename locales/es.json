@@ -37,8 +37,7 @@
   "a_medida_realizamos_titulo": "Realizamos:",
   "a_medida_realizamos_desc": "Convertimos tus conceptos en realidad.",
   "a_medida_parrafo_3": "Nos apasiona lo que hacemos y eso se nota en cada proyecto que tomamos. Juntos, creamos soluciones que impactan.",
-  "reviews": {
-    "title": "Deja tu valoración",
+  "reviews.title": "Deja tu valoración",
     "name": "Nombre:",
     "placeholderName": "Tu nombre (máx. 50 caracteres)",
     "rating": "Valoración:",
@@ -47,7 +46,6 @@
     "photo": "Foto (opcional):",
     "submit": "Enviar valoración",
     "viewAll": "Ver todas las valoraciones"
-  },
   "contacto_titulo": "Contacto",
   "contacto_parrafo": "¿Listo para dar el siguiente paso? ¡Ponte en contacto con nosotros hoy mismo!",
   "contacto_parrafo_1": "Contáctanos",
@@ -57,3 +55,4 @@
   "popup_video_error": "Tu navegador no soporta el video.",
   "footer_texto": "© 2024 JANÉS ENGINYERIA. Todos los derechos reservados."
 }
+
