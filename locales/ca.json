@@ -38,14 +38,14 @@
   "a_medida_realizamos_desc": "Convertim els teus conceptes en realitat.",
   "a_medida_parrafo_3": "Ens apassiona el que fem i això es nota en cada projecte que emprenem. Junts, creem solucions que impacten.",
     "reviews.title": "Deixa la teva valoració",
-    "name": "Nom:",
-    "placeholderName": "El teu nom (màx. 50 caràcters)",
-    "rating": "Valoració:",
-    "comment": "Comentari:",
-    "placeholderComment": "Escriu el teu comentari (màx. 500 caràcters)",
-    "photo": "Foto (opcional):",
-    "submit": "Envia valoració",
-    "viewAll": "Veure totes les valoracions",
+    "reviews.name": "Nom:",
+    "reviews.placeholderName": "El teu nom (màx. 50 caràcters)",
+    "reviews.rating": "Valoració:",
+    "reviews.comment": "Comentari:",
+    "reviews.placeholderComment": "Escriu el teu comentari (màx. 500 caràcters)",
+    "reviews.photo": "Foto (opcional):",
+    "reviews.submit": "Envia valoració",
+    "reviews.viewAll": "Veure totes les valoracions",
   "contacto_titulo": "Contacte",
   "contacto_parrafo": "Preparat per fer el següent pas? Contacta amb nosaltres avui mateix!",
   "contacto_parrafo_1": "Contacta'ns",
@@ -55,4 +55,5 @@
   "popup_video_error": "El teu navegador no suporta el vídeo.",
   "footer_texto": "© 2024 JANÉS ENGINYERIA. Tots els drets reservats."
 }
+
 
