@@ -118,31 +118,36 @@ const loadTranslations = (lang) => {
     fetch(`../locales/${lang}.json`)
         .then(response => response.json())
         .then(translations => {
+            // Guardar en variable global para otros scripts
+            window.translations = translations;
+
             // Traducción de textos normales
             elementsToTranslate.forEach(element => {
                 const key = element.getAttribute('data-i18n');
-                if (translations[key]) {
-                    element.innerHTML = translations[key]; // Cambiado de textContent a innerHTML
-                }
+                const val = key.split('.').reduce((o, i) => o?.[i], translations);
+                if (val) element.innerHTML = val; // innerHTML por si hay etiquetas
             });
 
-            // 🔹 Traducción de placeholders
+            // Traducción de placeholders
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
                 const key = el.getAttribute('data-i18n-placeholder');
-                if (translations[key]) {
-                    el.setAttribute('placeholder', translations[key]);
-                }
+                const val = key.split('.').reduce((o, i) => o?.[i], translations);
+                if (val) el.setAttribute('placeholder', val);
             });
+
+            // Si hay botones dinámicos en valoraciones.js, que se actualicen
+            if (typeof window.actualizarTextosValoraciones === 'function') {
+                window.actualizarTextosValoraciones();
+            }
         })
         .catch(error => console.error('Error loading translations:', error));
 };
 
-
-    // Cambiar idioma al seleccionar una opción
-    languageSelector.addEventListener('change', (event) => {
-        const selectedLanguage = event.target.value;
-        loadTranslations(selectedLanguage);
-    });
+// Cambiar idioma al seleccionar una opción
+languageSelector.addEventListener('change', (event) => {
+    const selectedLanguage = event.target.value;
+    loadTranslations(selectedLanguage);
+});
 
 // Función para detectar el idioma del navegador
 function detectarIdiomaNavegador() {
@@ -155,19 +160,19 @@ function cargarContenidoPorIdioma() {
     const idioma = detectarIdiomaNavegador();
     if (idioma === 'es') {
         document.documentElement.lang = 'es';
-        languageSelector.value = 'es'; // Seleccionar el valor correcto en el selector
-        loadTranslations('es'); // Cargar contenido en español
+        languageSelector.value = 'es';
+        loadTranslations('es');
     } else if (idioma === 'ca') {
         document.documentElement.lang = 'ca';
-        languageSelector.value = 'ca'; // Seleccionar el valor correcto en el selector
-        loadTranslations('ca'); // Cargar contenido en catalán
+        languageSelector.value = 'ca';
+        loadTranslations('ca');
     } else {
         document.documentElement.lang = 'en';
-        languageSelector.value = 'en'; // Seleccionar el valor correcto en el selector
-        loadTranslations('en'); // Cargar contenido en inglés por defecto
+        languageSelector.value = 'en';
+        loadTranslations('en');
     }
 }
- 
+
 // Llama a la función al cargar la página
 cargarContenidoPorIdioma();
 
@@ -307,6 +312,7 @@ cargarContenidoPorIdioma();
         });
     });
  
+
 
 
 
