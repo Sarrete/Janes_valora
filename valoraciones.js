@@ -5,7 +5,12 @@ import {
   query, where, orderBy, onSnapshot
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// 2) CONFIGURACIÓN FIREBASE
+// 2) IMPORTS I18NEXT COMO MÓDULO
+import i18next from 'https://unpkg.com/i18next@22.4.9/dist/esm/i18next.js';
+import HttpBackend from 'https://unpkg.com/i18next-http-backend@1.6.1/dist/esm/index.js';
+import LanguageDetector from 'https://unpkg.com/i18next-browser-languagedetector@6.1.6/dist/esm/index.js';
+
+// 3) CONFIGURACIÓN FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyCCOHmdAFNnENTFDuZIw4kb51NqfXA12DA",
   authDomain: "valoraciones-a8350.firebaseapp.com",
@@ -14,12 +19,27 @@ const firebaseConfig = {
   messagingSenderId: "286602851936",
   appId: "1:286602851936:web:e1d4d11bfe1391dd1c7505"
 };
-
-// 3) INICIALIZAR APP Y SERVICIOS
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 4) INICIAR I18NEXT Y ESPERAR A QUE ESTÉ LISTO
+// 4) INICIALIZAR I18NEXT
+i18next
+  .use(HttpBackend)
+  .use(LanguageDetector)
+  .init({
+    fallbackLng: 'es',
+    debug: true,
+    backend: {
+      loadPath: '/locales/{{lng}}.json' // Ajusta la ruta a tus JSON
+    }
+  })
+  .then(() => {
+    // Ejecutamos todo el JS de valoraciones después de i18next
+    iniciarValoraciones();
+  })
+  .catch(err => console.error('Error inicializando i18next:', err));
+
+// 5) FUNCIÓN PRINCIPAL
 function iniciarValoraciones() {
   const form = document.getElementById('ratingForm');
   const stars = document.querySelectorAll('#ratingStars .star');
@@ -27,14 +47,11 @@ function iniciarValoraciones() {
   const verTodasBtn = document.getElementById('verTodasBtn');
   let currentRating = 0;
 
-  // Mensaje de carga inicial
   reviewsContainer.innerHTML = `<p class="loading">${i18next.t("reviews.loading")}</p>`;
 
-  // 5) ESTRELLAS INTERACTIVAS
+  // 6) ESTRELLAS INTERACTIVAS
   function updateStars(rating) {
-    stars.forEach((star, idx) => {
-      star.classList.toggle('selected', idx < rating);
-    });
+    stars.forEach((star, idx) => star.classList.toggle('selected', idx < rating));
   }
 
   stars.forEach((star, idx) => {
@@ -47,25 +64,24 @@ function iniciarValoraciones() {
     });
   });
 
-  // 🔹 Función para detectar código malicioso
+  // 7) VALIDACIÓN ANTI-XSS
   function contieneCodigoPeligroso(texto) {
     const patron = /<\s*script|onerror\s*=|onload\s*=|javascript:|<\s*iframe|<\s*img|<\s*svg/i;
     return patron.test(texto);
   }
 
-  // 6) ENVÍO DEL FORMULARIO
-  form.addEventListener('submit', async (e) => {
+  // 8) ENVÍO DEL FORMULARIO
+  form.addEventListener('submit', async e => {
     e.preventDefault();
 
     const name = document.getElementById('name').value.trim();
     const comment = document.getElementById('comment').value.trim();
     const photoFile = document.getElementById('photo').files[0];
 
-    if (!name) return alert(i18next.t('reviews.name') + ' ' + i18next.t('reviews.noComment'));
-    if (currentRating === 0) return alert(i18next.t('reviews.rating') + ' ' + i18next.t('reviews.noComment'));
-
+    if (!name) return alert(i18next.t('reviews.name') + ' ' + i18next.t('reviews.required'));
+    if (currentRating === 0) return alert(i18next.t('reviews.rating') + ' ' + i18next.t('reviews.required'));
     if (contieneCodigoPeligroso(name) || contieneCodigoPeligroso(comment)) {
-      return alert(i18next.t('reviews.noComment') + ' contiene código no permitido.');
+      return alert(i18next.t('reviews.invalidCode'));
     }
 
     try {
@@ -79,9 +95,8 @@ function iniciarValoraciones() {
 
         const res = await fetch("https://api.cloudinary.com/v1_1/dcsez2e0d/image/upload", {
           method: "POST",
-          body: data,
+          body: data
         });
-
         const json = await res.json();
         if (!res.ok) throw new Error(json.error?.message || 'Error subiendo imagen');
         photoURL = json.secure_url;
@@ -96,33 +111,27 @@ function iniciarValoraciones() {
         aprobado: false
       });
 
-      alert(i18next.t('reviews.submit') + '. Se revisará antes de publicarse.');
+      alert(i18next.t('reviews.submitSuccess'));
       form.reset();
       currentRating = 0;
       updateStars(0);
 
     } catch (err) {
       console.error(err);
-      alert('Error al enviar la valoración: ' + (err?.message || err));
+      alert(i18next.t('reviews.submitError') + ': ' + (err?.message || err));
     }
   });
 
-  // 7) ESCUCHA EN TIEMPO REAL — SOLO RESEÑAS APROBADAS
-  const q = query(
-    collection(db, 'valoraciones'),
-    where('aprobado', '==', true),
-    orderBy('timestamp', 'desc')
-  );
-
+  // 9) ESCUCHA FIRESTORE
+  const q = query(collection(db, 'valoraciones'), where('aprobado', '==', true), orderBy('timestamp', 'desc'));
   let todasLasReseñas = [];
   let mostrandoTodas = false;
 
-  onSnapshot(q, (snapshot) => {
+  onSnapshot(q, snapshot => {
     const nuevas = [];
 
     snapshot.forEach(doc => {
       const data = doc.data();
-
       if (!data?.nombre || typeof data.rating !== 'number') return;
 
       nuevas.push({
@@ -135,17 +144,13 @@ function iniciarValoraciones() {
 
     todasLasReseñas = nuevas;
 
-    if (todasLasReseñas.length > 0) {
-      renderReviews();
-    } else {
-      reviewsContainer.innerHTML = `<p class="no-data">${i18next.t('reviews.noData')}</p>`;
-    }
+    if (todasLasReseñas.length > 0) renderReviews();
+    else reviewsContainer.innerHTML = `<p class="no-data">${i18next.t('reviews.noData')}</p>`;
   });
 
-  // 8) RENDER DE RESEÑAS
+  // 10) RENDER RESEÑAS
   function renderReviews() {
     reviewsContainer.innerHTML = "";
-
     const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
 
     lista.forEach(r => {
@@ -153,9 +158,7 @@ function iniciarValoraciones() {
       div.classList.add("review-card");
 
       const comentarioSeguro = String(r.comentario || i18next.t('reviews.noComment'));
-      const textoCorto = comentarioSeguro.length > 120
-        ? comentarioSeguro.slice(0, 120) + "..."
-        : comentarioSeguro;
+      const textoCorto = comentarioSeguro.length > 120 ? comentarioSeguro.slice(0, 120) + "..." : comentarioSeguro;
 
       // Nombre
       const h3 = document.createElement("h3");
@@ -206,40 +209,21 @@ function iniciarValoraciones() {
     });
   }
 
-  // 9) BOTÓN "VER TODAS"
+  // 11) BOTÓN VER TODAS
   if (verTodasBtn) {
     verTodasBtn.addEventListener("click", () => {
       mostrandoTodas = !mostrandoTodas;
       renderReviews();
-      verTodasBtn.innerText = mostrandoTodas
-        ? i18next.t("reviews.viewAllLess")
-        : i18next.t("reviews.viewAll");
+      verTodasBtn.innerText = mostrandoTodas ? i18next.t("reviews.viewAllLess") : i18next.t("reviews.viewAll");
     });
   }
 
-  // 🔹 Actualizar al cambiar de idioma
+  // 12) ACTUALIZAR AL CAMBIAR IDIOMA
   i18next.on("languageChanged", () => {
     if (verTodasBtn) {
-      verTodasBtn.innerText = mostrandoTodas
-        ? i18next.t("reviews.viewAllLess")
-        : i18next.t("reviews.viewAll");
+      verTodasBtn.innerText = mostrandoTodas ? i18next.t("reviews.viewAllLess") : i18next.t("reviews.viewAll");
     }
     renderReviews();
   });
 }
 
-// 10) INICIALIZAR I18NEXT
-i18next
-  .use(i18nextHttpBackend)
-  .use(i18nextBrowserLanguageDetector)
-  .init({
-    fallbackLng: 'es',
-    debug: true,
-    backend: {
-      loadPath: '/locales/{{lng}}.json' // Ajusta la ruta a tus JSON
-    }
-  }, function(err, t) {
-    if (err) return console.error(err);
-    // Iniciar todo el JS de valoraciones después de i18next
-    iniciarValoraciones();
-  });
