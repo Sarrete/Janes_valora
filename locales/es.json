@@ -38,14 +38,21 @@
   "a_medida_realizamos_desc": "Convertimos tus conceptos en realidad.",
   "a_medida_parrafo_3": "Nos apasiona lo que hacemos y eso se nota en cada proyecto que tomamos. Juntos, creamos soluciones que impactan.",
   "reviews.title": "Deja tu valoración",
-    "reviews.name": "Nombre:",
-    "reviews.placeholderName": "Tu nombre (máx. 50 caracteres)",
-    "reviews.rating": "Valoración:",
-    "reviews.comment": "Comentario:",
-    "reviews.placeholderComment": "Escribe tu comentario (máx. 500 caracteres)",
-    "reviews.photo": "Foto (opcional):",
-    "reviews.submit": "Enviar valoración",
-    "reviews.viewAll": "Ver todas las valoraciones",
+  "reviews.name": "Nombre:",
+  "reviews.placeholderName": "Tu nombre (máx. 50 caracteres)",
+  "reviews.rating": "Valoración:",
+  "reviews.comment": "Comentario:",
+  "reviews.placeholderComment": "Escribe tu comentario (máx. 500 caracteres)",
+  "reviews.photo": "Foto (opcional):",
+  "reviews.submit": "Enviar valoración",
+  "reviews.viewMore": "Ver más",
+  "reviews.viewLess": "Ver menos",
+  "reviews.viewAll": "Ver todas las valoraciones",
+  "reviews.viewAllLess": "Ver menos valoraciones",
+  "reviews.loading": "Cargando valoraciones...",
+  "reviews.noData": "No hay valoraciones aprobadas todavía.",
+  "reviews.noComment": "Sin comentario",
+  "reviews.photoAlt": "Foto valoración",
   "contacto_titulo": "Contacto",
   "contacto_parrafo": "¿Listo para dar el siguiente paso? ¡Ponte en contacto con nosotros hoy mismo!",
   "contacto_parrafo_1": "Contáctanos",
@@ -55,6 +62,7 @@
   "popup_video_error": "Tu navegador no soporta el video.",
   "footer_texto": "© 2024 JANÉS ENGINYERIA. Todos los derechos reservados."
 }
+
 
 
 
