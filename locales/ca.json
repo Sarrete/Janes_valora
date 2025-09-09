@@ -37,15 +37,22 @@
   "a_medida_realizamos_titulo": "Realitzem:",
   "a_medida_realizamos_desc": "Convertim els teus conceptes en realitat.",
   "a_medida_parrafo_3": "Ens apassiona el que fem i això es nota en cada projecte que emprenem. Junts, creem solucions que impacten.",
-    "reviews.title": "Deixa la teva valoració",
-    "reviews.name": "Nom:",
-    "reviews.placeholderName": "El teu nom (màx. 50 caràcters)",
-    "reviews.rating": "Valoració:",
-    "reviews.comment": "Comentari:",
-    "reviews.placeholderComment": "Escriu el teu comentari (màx. 500 caràcters)",
-    "reviews.photo": "Foto (opcional):",
-    "reviews.submit": "Envia valoració",
-    "reviews.viewAll": "Veure totes les valoracions",
+  "reviews.title": "Deixa la teva valoració",
+  "reviews.name": "Nom:",
+  "reviews.placeholderName": "El teu nom (màx. 50 caràcters)",
+  "reviews.rating": "Valoració:",
+  "reviews.comment": "Comentari:",
+  "reviews.placeholderComment": "Escriu el teu comentari (màx. 500 caràcters)",
+  "reviews.photo": "Foto (opcional):",
+  "reviews.submit": "Enviar valoració",
+  "reviews.viewMore": "Veure més",
+  "reviews.viewLess": "Veure menys",
+  "reviews.viewAll": "Veure totes les valoracions",
+  "reviews.viewAllLess": "Veure menys valoracions",
+  "reviews.loading": "Carregant valoracions...",
+  "reviews.noData": "Encara no hi ha valoracions aprovades.",
+  "reviews.noComment": "Sense comentari",
+  "reviews.photoAlt": "Foto valoració",
   "contacto_titulo": "Contacte",
   "contacto_parrafo": "Preparat per fer el següent pas? Contacta amb nosaltres avui mateix!",
   "contacto_parrafo_1": "Contacta'ns",
@@ -55,5 +62,6 @@
   "popup_video_error": "El teu navegador no suporta el vídeo.",
   "footer_texto": "© 2024 JANÉS ENGINYERIA. Tots els drets reservats."
 }
+
 
 
