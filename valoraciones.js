@@ -158,14 +158,15 @@ function renderReviews() {
       btnVerMas.innerText = t.viewMore || "Ver más";
 
       btnVerMas.addEventListener("click", () => {
+        const tNow = window.translations?.reviews || {};
         if (btnVerMas.dataset.state === "more") {
           p.innerText = comentarioSeguro;
           btnVerMas.dataset.state = "less";
-          btnVerMas.innerText = t.viewLess || "Ver menos";
+          btnVerMas.innerText = tNow.viewLess || "Ver menos";
         } else {
           p.innerText = textoCorto;
           btnVerMas.dataset.state = "more";
-          btnVerMas.innerText = t.viewMore || "Ver más";
+          btnVerMas.innerText = tNow.viewMore || "Ver más";
         }
       });
 
@@ -195,6 +196,10 @@ if (verTodasBtn) {
   verTodasBtn.addEventListener("click", () => {
     mostrandoTodas = !mostrandoTodas;
     verTodasBtn.dataset.mostrando = mostrandoTodas ? "true" : "false";
+    const tNow = window.translations?.reviews || {};
+    verTodasBtn.textContent = mostrandoTodas
+      ? (tNow.viewLess || "Ver menos")
+      : (tNow.viewAll || "Ver todas las valoraciones");
     renderReviews();
   });
 }
