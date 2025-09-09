@@ -103,6 +103,13 @@ const q = query(
 let todasLasReseñas = [];
 let mostrandoTodas = false;
 
+// Esperar a que las traducciones estén listas antes de renderizar
+document.addEventListener('translationsLoaded', () => {
+  if (todasLasReseñas.length > 0) {
+    renderReviews();
+  }
+});
+
 onSnapshot(q, (snapshot) => {
   const t = window.translations?.reviews || {};
   const nuevas = [];
@@ -118,9 +125,10 @@ onSnapshot(q, (snapshot) => {
   });
 
   todasLasReseñas = nuevas;
-  if (todasLasReseñas.length > 0) renderReviews();
-  else {
-    reviewsContainer.innerHTML = `<p class="no-data" data-i18n="reviews.noData">${t.noData || "No hay valoraciones aprobadas todavía."}</p>`;
+
+  // Solo renderizar si ya hay traducciones cargadas
+  if (window.translations) {
+    renderReviews();
   }
 });
 
