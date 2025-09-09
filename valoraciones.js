@@ -21,30 +21,7 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ------------------------------
-// 4) IMPORTS I18NEXT
-import i18next from './js/libs/i18next.js';
-import HttpBackend from './js/libs/i18next-http-backend.js';
-import LanguageDetector from './js/libs/i18next-browser-languagedetector.js';
-
-// ------------------------------
-// 5) CONFIGURACIÓN I18NEXT
-i18next
-  .use(HttpBackend)
-  .use(LanguageDetector)
-  .init({
-    fallbackLng: 'es',
-    debug: false,
-    backend: {
-      loadPath: './locales/{{lng}}.json'
-    }
-  })
-  .then(() => {
-    // Traducir la sección de valoraciones al cargar
-    traducirValoraciones();
-  });
-
-// ------------------------------
-// 6) ELEMENTOS DOM
+// 4) ELEMENTOS DOM
 const form = document.getElementById('ratingForm');
 const stars = document.querySelectorAll('#ratingStars .star');
 const reviewsContainer = document.getElementById('reviews');
@@ -55,7 +32,7 @@ let currentRating = 0;
 reviewsContainer.innerHTML = `<p class="loading">${i18next.t('reviews.loading','Cargando valoraciones...')}</p>`;
 
 // ------------------------------
-// 7) ESTRELLAS INTERACTIVAS
+// 5) ESTRELLAS INTERACTIVAS
 function updateStars(rating) {
   stars.forEach((star, idx) => {
     star.classList.toggle('selected', idx < rating);
@@ -73,14 +50,14 @@ stars.forEach((star, idx) => {
 });
 
 // ------------------------------
-// 8) VALIDACIÓN ANTI-XSS
+// 6) VALIDACIÓN ANTI-XSS
 function contieneCodigoPeligroso(texto) {
   const patron = /<\s*script|onerror\s*=|onload\s*=|javascript:|<\s*iframe|<\s*img|<\s*svg/i;
   return patron.test(texto);
 }
 
 // ------------------------------
-// 9) ENVÍO DEL FORMULARIO (Firebase intacto)
+// 7) ENVÍO DEL FORMULARIO (Firebase intacto)
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -135,7 +112,7 @@ form.addEventListener('submit', async (e) => {
 });
 
 // ------------------------------
-// 10) ESCUCHA EN TIEMPO REAL — SOLO RESEÑAS APROBADAS (Firebase intacto)
+// 8) ESCUCHA EN TIEMPO REAL — SOLO RESEÑAS APROBADAS (Firebase intacto)
 let todasLasReseñas = [];
 let mostrandoTodas = false;
 
@@ -162,7 +139,7 @@ onSnapshot(
 );
 
 // ------------------------------
-// 11) RENDER DE RESEÑAS CON BOTONES TRADUCIBLES
+// 9) RENDER DE RESEÑAS CON BOTONES TRADUCIBLES
 function renderReviews() {
   reviewsContainer.innerHTML = "";
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
@@ -224,7 +201,7 @@ function renderReviews() {
 }
 
 // ------------------------------
-// 12) BOTÓN "VER TODAS" CON TRADUCCIÓN
+// 10) BOTÓN "VER TODAS" CON TRADUCCIÓN
 if (verTodasBtn) {
   verTodasBtn.addEventListener("click", () => {
     mostrandoTodas = !mostrandoTodas;
@@ -236,7 +213,7 @@ if (verTodasBtn) {
 }
 
 // ------------------------------
-// 13) FUNCION PARA TRADUCIR PLACEHOLDERS Y LABELS
+// 11) FUNCION PARA TRADUCIR PLACEHOLDERS Y LABELS
 function traducirValoraciones() {
   document.querySelector('[data-i18n="reviews.title"]').innerText = i18next.t('reviews.title');
   document.querySelector('[data-i18n="reviews.name"]').innerText = i18next.t('reviews.name');
