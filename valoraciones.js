@@ -1,11 +1,11 @@
-// 1) IMPORTS FIREBASE
+// IMPORTS FIREBASE
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
   getFirestore, collection, addDoc, serverTimestamp,
   query, where, orderBy, onSnapshot
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// 2) CONFIGURACIÓN FIREBASE
+// CONFIGURACIÓN FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyCCOHmdAFNnENTFDuZIw4kb51NqfXA12DA",
   authDomain: "valoraciones-a8350.firebaseapp.com",
@@ -15,21 +15,21 @@ const firebaseConfig = {
   appId: "1:286602851936:web:e1d4d11bfe1391dd1c7505"
 };
 
-// 3) INICIALIZAR APP Y SERVICIOS
+// INICIALIZAR APP Y SERVICIOS
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// 4) ELEMENTOS DOM
+// ELEMENTOS DOM
 const form = document.getElementById('ratingForm');
 const stars = document.querySelectorAll('#ratingStars .star');
 const reviewsContainer = document.getElementById('reviews');
 const verTodasBtn = document.getElementById('verTodasBtn');
 let currentRating = 0;
 
-// Mensaje inicial
-reviewsContainer.innerHTML = '<p class="loading" data-i18n="reviews.loading">Cargando valoraciones...</p>';
+// MENSAJE INICIAL
+reviewsContainer.innerHTML = '<p class="loading">Cargando valoraciones...</p>';
 
-// 5) ESTRELLAS INTERACTIVAS
+// ESTRELLAS INTERACTIVAS
 function updateStars(rating) {
   stars.forEach((star, idx) => star.classList.toggle('selected', idx < rating));
 }
@@ -40,24 +40,23 @@ stars.forEach((star, idx) => {
   star.addEventListener('click', () => { currentRating = value; updateStars(currentRating); });
 });
 
-// 6) SEGURIDAD
+// SEGURIDAD
 function contieneCodigoPeligroso(texto) {
   const patron = /<\s*script|onerror\s*=|onload\s*=|javascript:|<\s*iframe|<\s*img|<\s*svg/i;
   return patron.test(texto);
 }
 
-// 7) ENVÍO FORMULARIO
+// ENVÍO FORMULARIO
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  const t = window.translations?.reviews || {};
   const name = document.getElementById('name').value.trim();
   const comment = document.getElementById('comment').value.trim();
   const photoFile = document.getElementById('photo').files[0];
 
-  if (!name) return alert(t.alertName || 'Por favor, ingresa tu nombre.');
-  if (currentRating === 0) return alert(t.alertRating || 'Por favor, selecciona una valoración.');
+  if (!name) return alert('Por favor, ingresa tu nombre.');
+  if (currentRating === 0) return alert('Por favor, selecciona una valoración.');
   if (contieneCodigoPeligroso(name) || contieneCodigoPeligroso(comment)) {
-    return alert(t.alertMalicious || 'Tu valoración contiene código o caracteres no permitidos.');
+    return alert('Tu valoración contiene código o caracteres no permitidos.');
   }
 
   try {
@@ -75,25 +74,25 @@ form.addEventListener('submit', async (e) => {
 
     await addDoc(collection(db, 'valoraciones'), {
       nombre: name,
-      comentario: comment || (t.noComment || 'Sin comentario'),
+      comentario: comment || 'Sin comentario',
       rating: currentRating,
       photoURL: photoURL || null,
       timestamp: serverTimestamp(),
       aprobado: false
     });
 
-    alert(t.alertSent || 'Valoración enviada. Se revisará antes de publicarse.');
+    alert('Valoración enviada. Se revisará antes de publicarse.');
     form.reset();
     currentRating = 0;
     updateStars(0);
 
   } catch (err) {
     console.error(err);
-    alert(t.alertError || ('Error al enviar la valoración: ' + (err?.message || err)));
+    alert('Error al enviar la valoración: ' + (err?.message || err));
   }
 });
 
-// 8) ESCUCHA EN TIEMPO REAL
+// ESCUCHA EN TIEMPO REAL
 const q = query(
   collection(db, 'valoraciones'),
   where('aprobado', '==', true),
@@ -103,38 +102,25 @@ const q = query(
 let todasLasReseñas = [];
 let mostrandoTodas = false;
 
-// Esperar a que las traducciones estén listas antes de renderizar
-document.addEventListener('translationsLoaded', () => {
-  if (todasLasReseñas.length > 0) {
-    renderReviews();
-  }
-});
-
 onSnapshot(q, (snapshot) => {
-  const t = window.translations?.reviews || {};
   const nuevas = [];
   snapshot.forEach(doc => {
     const data = doc.data();
     if (!data?.nombre || typeof data.rating !== 'number') return;
     nuevas.push({
       nombre: data.nombre,
-      comentario: data.comentario || (t.noComment || 'Sin comentario'),
+      comentario: data.comentario || 'Sin comentario',
       rating: data.rating,
       photoURL: data.photoURL || null
     });
   });
 
   todasLasReseñas = nuevas;
-
-  // Solo renderizar si ya hay traducciones cargadas
-  if (window.translations) {
-    renderReviews();
-  }
+  renderReviews();
 });
 
-// 9) RENDER DE RESEÑAS
+// RENDER DE RESEÑAS (solo flechas)
 function renderReviews() {
-  const t = window.translations?.reviews || {};
   reviewsContainer.innerHTML = "";
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
 
@@ -142,7 +128,7 @@ function renderReviews() {
     const div = document.createElement("div");
     div.classList.add("review-card");
 
-    const comentarioSeguro = String(r.comentario || (t.noComment || 'Sin comentario'));
+    const comentarioSeguro = String(r.comentario || 'Sin comentario');
     const textoCorto = comentarioSeguro.length > 120 ? comentarioSeguro.slice(0, 120) + "..." : comentarioSeguro;
 
     const h3 = document.createElement("h3");
@@ -163,18 +149,18 @@ function renderReviews() {
       const btnVerMas = document.createElement("button");
       btnVerMas.classList.add("ver-mas");
       btnVerMas.dataset.state = "more";
-      btnVerMas.innerText = t.viewMore || "Ver más";
+      btnVerMas.type = "button";
+      btnVerMas.innerText = "▼▼▼";
 
       btnVerMas.addEventListener("click", () => {
-        const tNow = window.translations?.reviews || {};
         if (btnVerMas.dataset.state === "more") {
           p.innerText = comentarioSeguro;
           btnVerMas.dataset.state = "less";
-          btnVerMas.innerText = tNow.viewLess || "Ver menos";
+          btnVerMas.innerText = "▲▲▲";
         } else {
           p.innerText = textoCorto;
           btnVerMas.dataset.state = "more";
-          btnVerMas.innerText = tNow.viewMore || "Ver más";
+          btnVerMas.innerText = "▼▼▼";
         }
       });
 
@@ -184,7 +170,7 @@ function renderReviews() {
     if (r.photoURL) {
       const img = document.createElement("img");
       img.src = r.photoURL;
-      img.alt = t.photoAlt || "Foto valoración";
+      img.alt = "Foto valoración";
       img.loading = "lazy";
       div.appendChild(img);
     }
@@ -192,22 +178,13 @@ function renderReviews() {
     reviewsContainer.appendChild(div);
   });
 
-  if (verTodasBtn) {
-    verTodasBtn.textContent = mostrandoTodas
-      ? (t.viewLess || "Ver menos")
-      : (t.viewAll || "Ver todas las valoraciones");
-  }
+  verTodasBtn.textContent = mostrandoTodas ? "▲▲▲" : "▼▼▼";
 }
 
-// 10) BOTÓN "VER TODAS"
+// BOTÓN GLOBAL "VER TODAS"
 if (verTodasBtn) {
   verTodasBtn.addEventListener("click", () => {
     mostrandoTodas = !mostrandoTodas;
-    verTodasBtn.dataset.mostrando = mostrandoTodas ? "true" : "false";
-    const tNow = window.translations?.reviews || {};
-    verTodasBtn.textContent = mostrandoTodas
-      ? (tNow.viewLess || "Ver menos")
-      : (tNow.viewAll || "Ver todas las valoraciones");
     renderReviews();
   });
 }
