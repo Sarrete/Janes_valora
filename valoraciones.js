@@ -27,7 +27,7 @@ const verTodasBtn = document.getElementById('verTodasBtn');
 let currentRating = 0;
 
 // Mensaje de carga inicial
-reviewsContainer.innerHTML = '<p class="loading">Cargando valoraciones...</p>';
+reviewsContainer.innerHTML = `<p class="loading">${i18next.t("reviews.loading")}</p>`;
 
 // 5) ESTRELLAS INTERACTIVAS
 function updateStars(rating) {
@@ -60,22 +60,20 @@ form.addEventListener('submit', async (e) => {
   const comment = document.getElementById('comment').value.trim();
   const photoFile = document.getElementById('photo').files[0];
 
-  if (!name) return alert('Por favor, ingresa tu nombre.');
-  if (currentRating === 0) return alert('Por favor, selecciona una valoración.');
+  if (!name) return alert(i18next.t('reviews.name') + ' ' + i18next.t('reviews.noComment'));
+  if (currentRating === 0) return alert(i18next.t('reviews.rating') + ' ' + i18next.t('reviews.noComment'));
 
-  // Validación anti-XSS
   if (contieneCodigoPeligroso(name) || contieneCodigoPeligroso(comment)) {
-    return alert('Tu valoración contiene código o caracteres no permitidos.');
+    return alert(i18next.t('reviews.noComment') + ' contiene código no permitido.');
   }
 
   try {
     let photoURL = null;
 
-    // Subida a Cloudinary
     if (photoFile) {
       const data = new FormData();
       data.append("file", photoFile);
-      data.append("upload_preset", "valoraciones_janes"); // preset unsigned
+      data.append("upload_preset", "valoraciones_janes");
       data.append("folder", "valoraciones");
 
       const res = await fetch("https://api.cloudinary.com/v1_1/dcsez2e0d/image/upload", {
@@ -90,14 +88,14 @@ form.addEventListener('submit', async (e) => {
 
     await addDoc(collection(db, 'valoraciones'), {
       nombre: name,
-      comentario: comment || 'Sin comentario',
+      comentario: comment || i18next.t('reviews.noComment'),
       rating: currentRating,
       photoURL: photoURL || null,
       timestamp: serverTimestamp(),
       aprobado: false
     });
 
-    alert('Valoración enviada. Se revisará antes de publicarse.');
+    alert(i18next.t('reviews.submit') + '. Se revisará antes de publicarse.');
     form.reset();
     currentRating = 0;
     updateStars(0);
@@ -128,7 +126,7 @@ onSnapshot(q, (snapshot) => {
 
     nuevas.push({
       nombre: data.nombre,
-      comentario: data.comentario || 'Sin comentario',
+      comentario: data.comentario || i18next.t('reviews.noComment'),
       rating: data.rating,
       photoURL: data.photoURL || null
     });
@@ -139,7 +137,7 @@ onSnapshot(q, (snapshot) => {
   if (todasLasReseñas.length > 0) {
     renderReviews();
   } else {
-    reviewsContainer.innerHTML = '<p class="no-data">No hay valoraciones aprobadas todavía.</p>';
+    reviewsContainer.innerHTML = `<p class="no-data">${i18next.t('reviews.noData')}</p>`;
   }
 });
 
@@ -153,7 +151,7 @@ function renderReviews() {
     const div = document.createElement("div");
     div.classList.add("review-card");
 
-    const comentarioSeguro = String(r.comentario || 'Sin comentario');
+    const comentarioSeguro = String(r.comentario || i18next.t('reviews.noComment'));
     const textoCorto = comentarioSeguro.length > 120
       ? comentarioSeguro.slice(0, 120) + "..."
       : comentarioSeguro;
@@ -179,15 +177,15 @@ function renderReviews() {
     if (comentarioSeguro.length > 120) {
       const btnVerMas = document.createElement("button");
       btnVerMas.classList.add("ver-mas");
-      btnVerMas.innerText = "Ver más";
+      btnVerMas.innerText = i18next.t("reviews.viewMore");
 
       btnVerMas.addEventListener("click", () => {
         if (p.innerText.endsWith("...")) {
           p.innerText = comentarioSeguro;
-          btnVerMas.innerText = "Ver menos";
+          btnVerMas.innerText = i18next.t("reviews.viewLess");
         } else {
           p.innerText = textoCorto;
-          btnVerMas.innerText = "Ver más";
+          btnVerMas.innerText = i18next.t("reviews.viewMore");
         }
       });
 
@@ -198,7 +196,7 @@ function renderReviews() {
     if (r.photoURL) {
       const img = document.createElement("img");
       img.src = r.photoURL;
-      img.alt = "Foto valoración";
+      img.alt = i18next.t("reviews.photoAlt");
       img.loading = "lazy";
       div.appendChild(img);
     }
@@ -213,7 +211,18 @@ if (verTodasBtn) {
     mostrandoTodas = !mostrandoTodas;
     renderReviews();
     verTodasBtn.innerText = mostrandoTodas
-      ? "Ver menos valoraciones"
-      : "Ver todas las valoraciones";
+      ? i18next.t("reviews.viewAllLess")
+      : i18next.t("reviews.viewAll");
   });
 }
+
+// 🔹 Actualizar al cambiar de idioma
+i18next.on("languageChanged", () => {
+  // Actualiza botones dinámicos
+  if (verTodasBtn) {
+    verTodasBtn.innerText = mostrandoTodas
+      ? i18next.t("reviews.viewAllLess")
+      : i18next.t("reviews.viewAll");
+  }
+  renderReviews(); // refresca reseñas con textos traducidos
+});
