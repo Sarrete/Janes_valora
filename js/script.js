@@ -75,11 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // --- Inicializar idioma ---
     cargarContenidoPorIdioma();
-
-    // --- Aquí dejas el resto de tu código de miniaturas, popup, engranajes, etc. ---
-});
-             
-        
+                     
   // --- Función para la Miniatura Dinámica ---
 const miniaturaImagen = document.getElementById("miniatura-imagen");
 const imagenesMiniatura = [
@@ -297,6 +293,7 @@ miniatura1.addEventListener("click", function () {
         });
     });
  
+
 
 
 
