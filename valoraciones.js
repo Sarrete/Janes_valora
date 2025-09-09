@@ -195,15 +195,15 @@ function renderReviews() {
     if (comentarioSeguro.length > 120) {
       const btnVerMas = document.createElement("button");
       btnVerMas.classList.add("ver-mas");
-      btnVerMas.innerText = i18next.t('reviews.viewMore');
+      btnVerMas.innerText = i18next?.t('reviews.viewMore') || 'Ver más';
 
       btnVerMas.addEventListener("click", () => {
         if (p.innerText.endsWith("...")) {
           p.innerText = comentarioSeguro;
-          btnVerMas.innerText = i18next.t('reviews.viewLess');
+          btnVerMas.innerText = i18next?.t('reviews.viewLess') || 'Ver menos';
         } else {
           p.innerText = textoCorto;
-          btnVerMas.innerText = i18next.t('reviews.viewMore');
+          btnVerMas.innerText = i18next?.t('reviews.viewMore') || 'Ver más';
         }
       });
 
@@ -214,7 +214,7 @@ function renderReviews() {
     if (r.photoURL) {
       const img = document.createElement("img");
       img.src = r.photoURL;
-      img.alt = i18next.t('reviews.photoAlt') || "Foto valoración";
+      img.alt = i18next?.t('reviews.photoAlt') || "Foto valoración";
       img.loading = "lazy";
       div.appendChild(img);
     }
@@ -229,7 +229,7 @@ if (verTodasBtn) {
     mostrandoTodas = !mostrandoTodas;
     renderReviews();
     verTodasBtn.innerText = mostrandoTodas
-      ? i18next.t('reviews.viewLess') + " valoraciones"
-      : i18next.t('reviews.viewAll');
+      ? (i18next?.t('reviews.viewLess') || 'Ver menos') + " valoraciones"
+      : i18next?.t('reviews.viewAll') || 'Ver todas las valoraciones';
   });
 }
