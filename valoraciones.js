@@ -26,45 +26,91 @@ const reviewsContainer = document.getElementById('reviews');
 const verTodasBtn = document.getElementById('verTodasBtn');
 let currentRating = 0;
 
-// Mensaje de carga inicial
+// Mensaje inicial
 reviewsContainer.innerHTML = '<p class="loading">Cargando valoraciones...</p>';
 
 // 5) ESTRELLAS INTERACTIVAS
 function updateStars(rating) {
-  stars.forEach((star, idx) => {
-    star.classList.toggle('selected', idx < rating);
-  });
+  stars.forEach((star, idx) => star.classList.toggle('selected', idx < rating));
 }
-
 stars.forEach((star, idx) => {
   const value = idx + 1;
   star.addEventListener('mouseover', () => updateStars(value));
   star.addEventListener('mouseout', () => updateStars(currentRating));
-  star.addEventListener('click', () => {
-    currentRating = value;
-    updateStars(currentRating);
-  });
+  star.addEventListener('click', () => { currentRating = value; updateStars(currentRating); });
 });
 
-// 🔹 Función para detectar código malicioso
+// 6) FUNCIONES DE SEGURIDAD
 function contieneCodigoPeligroso(texto) {
   const patron = /<\s*script|onerror\s*=|onload\s*=|javascript:|<\s*iframe|<\s*img|<\s*svg/i;
   return patron.test(texto);
 }
 
-// 6) ENVÍO DEL FORMULARIO
+// 7) FUNCIONES DE TRADUCCIÓN
+let translations = {}; // Se llena al cargar el JSON
+
+async function cargarTraducciones(lang = "es") {
+  try {
+    const res = await fetch(`../locales/${lang}.json`);
+    translations = await res.json();
+
+    // Placeholders
+    const nameInput = document.getElementById("name");
+    const commentInput = document.getElementById("comment");
+    const submitBtn = document.querySelector("#ratingForm button[type='submit']");
+    if (nameInput) nameInput.placeholder = translations.reviews?.placeholderName || nameInput.placeholder;
+    if (commentInput) commentInput.placeholder = translations.reviews?.placeholderComment || commentInput.placeholder;
+    if (submitBtn) submitBtn.textContent = translations.reviews?.submit || submitBtn.textContent;
+
+    // Botón "Ver todas"
+    if (verTodasBtn) verTodasBtn.textContent = translations.reviews?.viewAll || verTodasBtn.textContent;
+
+  } catch (err) {
+    console.error("Error cargando traducciones:", err);
+  }
+}
+
+// Traduce botones dinámicos "Ver más / Ver menos"
+function traducirBotonesDinamicos() {
+  document.querySelectorAll(".ver-mas").forEach(btn => {
+    if (btn.innerText.includes("...") || btn.innerText === "Ver más") {
+      btn.innerText = translations?.reviews?.viewMore || btn.innerText;
+    } else if (btn.innerText === "Ver menos") {
+      btn.innerText = translations?.reviews?.viewLess || btn.innerText;
+    }
+  });
+
+  if (verTodasBtn) {
+    const mostrandoTodas = verTodasBtn.dataset.mostrando === "true";
+    verTodasBtn.textContent = mostrandoTodas
+      ? translations?.reviews?.viewLess + " valoraciones" || verTodasBtn.textContent
+      : translations?.reviews?.viewAll || verTodasBtn.textContent;
+  }
+}
+
+// Detectar idioma del navegador
+function detectarIdiomaNavegador() {
+  const idioma = navigator.language || navigator.userLanguage;
+  return idioma.split('-')[0];
+}
+
+// Ejecutar traducciones al cargar
+document.addEventListener("DOMContentLoaded", () => {
+  const lang = detectarIdiomaNavegador();
+  cargarTraducciones(lang);
+});
+
+// 8) ENVÍO FORMULARIO
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
-
   const name = document.getElementById('name').value.trim();
   const comment = document.getElementById('comment').value.trim();
   const photoFile = document.getElementById('photo').files[0];
 
-  if (!name) return alert('Por favor, ingresa tu nombre.');
-  if (currentRating === 0) return alert('Por favor, selecciona una valoración.');
-
+  if (!name) return alert(translations?.reviews?.alertName || 'Por favor, ingresa tu nombre.');
+  if (currentRating === 0) return alert(translations?.reviews?.alertRating || 'Por favor, selecciona una valoración.');
   if (contieneCodigoPeligroso(name) || contieneCodigoPeligroso(comment)) {
-    return alert('Tu valoración contiene código o caracteres no permitidos.');
+    return alert(translations?.reviews?.alertMalicious || 'Tu valoración contiene código o caracteres no permitidos.');
   }
 
   try {
@@ -74,12 +120,7 @@ form.addEventListener('submit', async (e) => {
       data.append("file", photoFile);
       data.append("upload_preset", "valoraciones_janes");
       data.append("folder", "valoraciones");
-
-      const res = await fetch("https://api.cloudinary.com/v1_1/dcsez2e0d/image/upload", {
-        method: "POST",
-        body: data,
-      });
-
+      const res = await fetch("https://api.cloudinary.com/v1_1/dcsez2e0d/image/upload", { method: "POST", body: data });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error?.message || 'Error subiendo imagen');
       photoURL = json.secure_url;
@@ -94,34 +135,27 @@ form.addEventListener('submit', async (e) => {
       aprobado: false
     });
 
-    alert('Valoración enviada. Se revisará antes de publicarse.');
+    alert(translations?.reviews?.alertSent || 'Valoración enviada. Se revisará antes de publicarse.');
     form.reset();
     currentRating = 0;
     updateStars(0);
 
   } catch (err) {
     console.error(err);
-    alert('Error al enviar la valoración: ' + (err?.message || err));
+    alert(translations?.reviews?.alertError || 'Error al enviar la valoración: ' + (err?.message || err));
   }
 });
 
-// 7) ESCUCHA EN TIEMPO REAL — SOLO RESEÑAS APROBADAS
-const q = query(
-  collection(db, 'valoraciones'),
-  where('aprobado', '==', true),
-  orderBy('timestamp', 'desc')
-);
-
+// 9) ESCUCHA EN TIEMPO REAL
+const q = query(collection(db, 'valoraciones'), where('aprobado', '==', true), orderBy('timestamp', 'desc'));
 let todasLasReseñas = [];
 let mostrandoTodas = false;
 
 onSnapshot(q, (snapshot) => {
   const nuevas = [];
-
   snapshot.forEach(doc => {
     const data = doc.data();
     if (!data?.nombre || typeof data.rating !== 'number') return;
-
     nuevas.push({
       nombre: data.nombre,
       comentario: data.comentario || 'Sin comentario',
@@ -129,20 +163,14 @@ onSnapshot(q, (snapshot) => {
       photoURL: data.photoURL || null
     });
   });
-
   todasLasReseñas = nuevas;
-
-  if (todasLasReseñas.length > 0) {
-    renderReviews();
-  } else {
-    reviewsContainer.innerHTML = '<p class="no-data">No hay valoraciones aprobadas todavía.</p>';
-  }
+  if (todasLasReseñas.length > 0) renderReviews();
+  else reviewsContainer.innerHTML = '<p class="no-data">No hay valoraciones aprobadas todavía.</p>';
 });
 
-// 8) RENDER DE RESEÑAS SEGURO CON PLACEHOLDERS TRADUCIBLES
+// 10) RENDER DE RESEÑAS
 function renderReviews() {
   reviewsContainer.innerHTML = "";
-
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
 
   lista.forEach(r => {
@@ -150,9 +178,7 @@ function renderReviews() {
     div.classList.add("review-card");
 
     const comentarioSeguro = String(r.comentario || 'Sin comentario');
-    const textoCorto = comentarioSeguro.length > 120
-      ? comentarioSeguro.slice(0, 120) + "..."
-      : comentarioSeguro;
+    const textoCorto = comentarioSeguro.length > 120 ? comentarioSeguro.slice(0, 120) + "..." : comentarioSeguro;
 
     // Nombre
     const h3 = document.createElement("h3");
@@ -175,15 +201,15 @@ function renderReviews() {
     if (comentarioSeguro.length > 120) {
       const btnVerMas = document.createElement("button");
       btnVerMas.classList.add("ver-mas");
-      btnVerMas.innerText = "Ver más";
+      btnVerMas.innerText = translations?.reviews?.viewMore || "Ver más";
 
       btnVerMas.addEventListener("click", () => {
         if (p.innerText.endsWith("...")) {
           p.innerText = comentarioSeguro;
-          btnVerMas.innerText = "Ver menos";
+          btnVerMas.innerText = translations?.reviews?.viewLess || "Ver menos";
         } else {
           p.innerText = textoCorto;
-          btnVerMas.innerText = "Ver más";
+          btnVerMas.innerText = translations?.reviews?.viewMore || "Ver más";
         }
       });
 
@@ -194,49 +220,23 @@ function renderReviews() {
     if (r.photoURL) {
       const img = document.createElement("img");
       img.src = r.photoURL;
-      img.alt = "Foto valoración";
+      img.alt = translations?.reviews?.photoAlt || "Foto valoración";
       img.loading = "lazy";
       div.appendChild(img);
     }
 
     reviewsContainer.appendChild(div);
   });
+
+  // Traducir botones dinámicos cada render
+  traducirBotonesDinamicos();
 }
 
-// 9) BOTÓN "VER TODAS"
+// 11) BOTÓN "VER TODAS"
 if (verTodasBtn) {
   verTodasBtn.addEventListener("click", () => {
     mostrandoTodas = !mostrandoTodas;
+    verTodasBtn.dataset.mostrando = mostrandoTodas ? "true" : "false";
     renderReviews();
-    verTodasBtn.innerText = mostrandoTodas
-      ? "Ver menos valoraciones"
-      : "Ver todas las valoraciones";
   });
 }
-
-// 10) FUNCIÓN PARA TRADUCIR PLACEHOLDERS DESDE ARCHIVOS LOCALES JSON
-function traducirPlaceholders(lang = "es") {
-  fetch(`../locales/${lang}.json`)
-    .then(res => res.json())
-    .then(translations => {
-      const nameInput = document.getElementById("name");
-      const commentInput = document.getElementById("comment");
-      if (nameInput) nameInput.placeholder = translations.reviews?.placeholderName || nameInput.placeholder;
-      if (commentInput) commentInput.placeholder = translations.reviews?.placeholderComment || commentInput.placeholder;
-
-      // Botón "Ver todas"
-      if (verTodasBtn) verTodasBtn.textContent = translations.reviews?.viewAll || verTodasBtn.textContent;
-
-      // Botones "Ver más / Ver menos" que ya existen
-      document.querySelectorAll(".ver-mas").forEach(btn => {
-        if (btn.innerText.includes("...") || btn.innerText === "Ver más") {
-          btn.innerText = translations.reviews?.viewMore || btn.innerText;
-        } else if (btn.innerText === "Ver menos") {
-          btn.innerText = translations.reviews?.viewLess || btn.innerText;
-        }
-      });
-    });
-}
-
-// Cargar traducciones al inicio según el idioma del HTML
-traducirPlaceholders(document.documentElement.lang || "es");
