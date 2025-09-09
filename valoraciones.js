@@ -26,7 +26,7 @@ const reviewsContainer = document.getElementById('reviews');
 const verTodasBtn = document.getElementById('verTodasBtn');
 let currentRating = 0;
 
-// Mensaje inicial (se traducirá por script.js)
+// Mensaje inicial
 reviewsContainer.innerHTML = '<p class="loading" data-i18n="reviews.loading">Cargando valoraciones...</p>';
 
 // 5) ESTRELLAS INTERACTIVAS
@@ -40,7 +40,7 @@ stars.forEach((star, idx) => {
   star.addEventListener('click', () => { currentRating = value; updateStars(currentRating); });
 });
 
-// 6) FUNCIONES DE SEGURIDAD
+// 6) SEGURIDAD
 function contieneCodigoPeligroso(texto) {
   const patron = /<\s*script|onerror\s*=|onload\s*=|javascript:|<\s*iframe|<\s*img|<\s*svg/i;
   return patron.test(texto);
