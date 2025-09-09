@@ -45,7 +45,7 @@
     "placeholderComment": "Escribe tu comentario (máx. 500 caracteres)",
     "photo": "Foto (opcional):",
     "submit": "Enviar valoración",
-    "viewAll": "Ver todas las valoraciones"
+    "viewAll": "Ver todas las valoraciones",
   "contacto_titulo": "Contacto",
   "contacto_parrafo": "¿Listo para dar el siguiente paso? ¡Ponte en contacto con nosotros hoy mismo!",
   "contacto_parrafo_1": "Contáctanos",
@@ -55,4 +55,5 @@
   "popup_video_error": "Tu navegador no soporta el video.",
   "footer_texto": "© 2024 JANÉS ENGINYERIA. Todos los derechos reservados."
 }
+
 
