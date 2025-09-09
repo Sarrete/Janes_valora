@@ -113,20 +113,30 @@ miniatura1.addEventListener("click", function () {
         languageSelector.style.display = 'none';
     });
 
-    // Función para cargar el archivo de traducción
-    const loadTranslations = (lang) => {
-        fetch(`../locales/${lang}.json`)
-            .then(response => response.json())
-            .then(translations => {
-                elementsToTranslate.forEach(element => {
-                    const key = element.getAttribute('data-i18n');
-                    if (translations[key]) {
-                        element.innerHTML = translations[key]; // Cambiado de textContent a innerHTML
-                    }
-                });
-            })
-            .catch(error => console.error('Error loading translations:', error));
-    };
+// Función para cargar el archivo de traducción
+const loadTranslations = (lang) => {
+    fetch(`../locales/${lang}.json`)
+        .then(response => response.json())
+        .then(translations => {
+            // Traducción de textos normales
+            elementsToTranslate.forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[key]) {
+                    element.innerHTML = translations[key]; // Cambiado de textContent a innerHTML
+                }
+            });
+
+            // 🔹 Traducción de placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                if (translations[key]) {
+                    el.setAttribute('placeholder', translations[key]);
+                }
+            });
+        })
+        .catch(error => console.error('Error loading translations:', error));
+};
+
 
     // Cambiar idioma al seleccionar una opción
     languageSelector.addEventListener('change', (event) => {
@@ -297,5 +307,6 @@ cargarContenidoPorIdioma();
         });
     });
  
+
 
 
