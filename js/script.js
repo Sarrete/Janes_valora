@@ -180,6 +180,26 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    document.querySelectorAll('.image-container').forEach(fig => {
+    fig.addEventListener('click', () => {
+        const images = JSON.parse(fig.dataset.images);
+        const video = fig.dataset.video || null;
+
+        cleanVideo();
+        currentMedia = images;
+        currentMediaIndex = 0;
+        isVideo = !!video;
+
+        // Si hay vídeo, lo ponemos como primer elemento
+        if (isVideo) {
+            currentMedia.unshift(video);
+        }
+
+        const caption = fig.querySelector('.image-caption')?.textContent || '';
+        showMedia(currentMediaIndex, caption);
+    });
+});
+    
     function showMedia(index, captionText) {
         popupCaption.textContent = captionText;
         cleanVideo();
@@ -248,4 +268,5 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault(); // Evita el scroll de fondo
     });
 });
+
 
