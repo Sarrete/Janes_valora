@@ -119,7 +119,7 @@ onSnapshot(q, (snapshot) => {
   renderReviews();
 });
 
-// RENDER DE RESEÑAS (botones con textos traducibles)
+// RENDER DE RESEÑAS (botones con textos traducibles y claves correctas)
 function renderReviews() {
   reviewsContainer.innerHTML = "";
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
@@ -152,17 +152,17 @@ function renderReviews() {
       btnVerMas.classList.add("ver-mas");
       btnVerMas.dataset.state = "more";
       btnVerMas.type = "button";
-      btnVerMas.innerText = t('reviews.seeMore');
+      btnVerMas.innerText = t('reviews.viewMore');
 
       btnVerMas.addEventListener("click", () => {
         if (btnVerMas.dataset.state === "more") {
           p.innerText = comentarioSeguro;
           btnVerMas.dataset.state = "less";
-          btnVerMas.innerText = t('reviews.seeLess');
+          btnVerMas.innerText = t('reviews.viewLess');
         } else {
           p.innerText = textoCorto;
           btnVerMas.dataset.state = "more";
-          btnVerMas.innerText = t('reviews.seeMore');
+          btnVerMas.innerText = t('reviews.viewMore');
         }
       });
 
@@ -182,8 +182,8 @@ function renderReviews() {
 
   // Botón global con textos traducibles
   verTodasBtn.textContent = mostrandoTodas
-    ? t('reviews.showLess')
-    : t('reviews.showAll');
+    ? t('reviews.viewAllLess')
+    : t('reviews.viewAll');
 }
 
 // BOTÓN GLOBAL "VER TODAS"
