@@ -112,13 +112,24 @@ onSnapshot(q, (snapshot) => {
       comentario: data.comentario || 'Sin comentario',
       rating: data.rating,
       photoURL: data.photoURL || null,
-      expanded: false // estado inicial
+      expanded: false
     });
   });
 
   todasLasReseñas = nuevas;
   renderReviews();
 });
+
+// Función segura para traducir
+function tr(key) {
+  if (typeof i18next !== 'undefined') {
+    return i18next.t(key);
+  }
+  if (typeof t !== 'undefined') {
+    return t(key);
+  }
+  return key;
+}
 
 // Fallback de traducciones si no existe t() ni i18next
 if (typeof t === 'undefined' && typeof i18next === 'undefined') {
@@ -138,11 +149,11 @@ function renderReviews() {
   reviewsContainer.innerHTML = "";
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
 
-  lista.forEach((r, idx) => {
+  lista.forEach((r) => {
     const div = document.createElement("div");
     div.classList.add("review-card");
 
-    const comentarioSeguro = String(r.comentario || t('reviews.noComment'));
+    const comentarioSeguro = String(r.comentario || tr('reviews.noComment'));
     const textoCorto = comentarioSeguro.length > 120
       ? comentarioSeguro.slice(0, 120) + "..."
       : comentarioSeguro;
@@ -165,7 +176,7 @@ function renderReviews() {
       const btnVerMas = document.createElement("button");
       btnVerMas.classList.add("ver-mas");
       btnVerMas.type = "button";
-      btnVerMas.innerText = r.expanded ? t('reviews.viewLess') : t('reviews.viewMore');
+      btnVerMas.innerText = r.expanded ? tr('reviews.viewLess') : tr('reviews.viewMore');
 
       btnVerMas.addEventListener("click", () => {
         r.expanded = !r.expanded;
@@ -178,7 +189,7 @@ function renderReviews() {
     if (r.photoURL) {
       const img = document.createElement("img");
       img.src = r.photoURL;
-      img.alt = t('reviews.photoAlt');
+      img.alt = tr('reviews.photoAlt');
       img.loading = "lazy";
       div.appendChild(img);
     }
@@ -188,8 +199,8 @@ function renderReviews() {
 
   // Botón global
   verTodasBtn.textContent = mostrandoTodas
-    ? t('reviews.viewAllLess')
-    : t('reviews.viewAll');
+    ? tr('reviews.viewAllLess')
+    : tr('reviews.viewAll');
 }
 
 // BOTÓN GLOBAL "VER TODAS"
