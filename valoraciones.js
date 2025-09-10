@@ -120,29 +120,18 @@ onSnapshot(q, (snapshot) => {
   renderReviews();
 });
 
-// Función segura para traducir
+// Función de traducción usando window.translations
 function tr(key) {
-  if (typeof i18next !== 'undefined') {
-    return i18next.t(key);
-  }
-  if (typeof t !== 'undefined') {
-    return t(key);
+  if (window.translations && window.translations[key]) {
+    return window.translations[key];
   }
   return key;
 }
 
-// Fallback de traducciones si no existe t() ni i18next
-if (typeof t === 'undefined' && typeof i18next === 'undefined') {
-  const translations = {
-    "reviews.noComment": "Sin comentario",
-    "reviews.viewMore": "Ver más",
-    "reviews.viewLess": "Ver menos",
-    "reviews.viewAll": "Ver todas las valoraciones",
-    "reviews.viewAllLess": "Ver menos valoraciones",
-    "reviews.photoAlt": "Foto valoración"
-  };
-  window.t = (key) => translations[key] || key;
-}
+// Escuchar cuando script.js cargue las traducciones
+document.addEventListener('translationsLoaded', () => {
+  renderReviews();
+});
 
 // RENDER DE RESEÑAS
 function renderReviews() {
@@ -207,13 +196,6 @@ function renderReviews() {
 if (verTodasBtn) {
   verTodasBtn.addEventListener("click", () => {
     mostrandoTodas = !mostrandoTodas;
-    renderReviews();
-  });
-}
-
-// Actualizar textos al cambiar idioma
-if (typeof i18next !== 'undefined') {
-  i18next.on('languageChanged', () => {
     renderReviews();
   });
 }
