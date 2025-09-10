@@ -119,6 +119,19 @@ onSnapshot(q, (snapshot) => {
   renderReviews();
 });
 
+// Fallback de traducciones si no existe t()
+if (typeof t === 'undefined') {
+  const translations = {
+    "reviews.noComment": "Sin comentario",
+    "reviews.viewMore": "Ver más",
+    "reviews.viewLess": "Ver menos",
+    "reviews.viewAll": "Ver todas las valoraciones",
+    "reviews.viewAllLess": "Ver menos valoraciones",
+    "reviews.photoAlt": "Foto valoración"
+  };
+  window.t = (key) => translations[key] || key;
+}
+
 // RENDER DE RESEÑAS (botones con textos traducibles y claves correctas)
 function renderReviews() {
   reviewsContainer.innerHTML = "";
