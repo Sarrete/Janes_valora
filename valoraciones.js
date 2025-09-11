@@ -104,6 +104,7 @@ form.addEventListener('submit', async (e) => {
       photoURL = json.secure_url;
     }
 
+    // 1️⃣ Guardar en Firestore
     await addDoc(collection(db, 'valoraciones'), {
       nombre: name,
       comentario: comment || 'Sin comentario',
@@ -112,6 +113,17 @@ form.addEventListener('submit', async (e) => {
       timestamp: serverTimestamp(),
       aprobado: false
     });
+
+    // 2️⃣ Llamar a la función de Netlify para enviar el email
+    fetch('/.netlify/functions/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        nombre: name,
+        comentario: comment || 'Sin comentario',
+        rating: currentRating
+      })
+    }).catch(err => console.error('Error enviando email:', err));
 
     alert('Valoración enviada. Se revisará antes de publicarse.');
     form.reset();
