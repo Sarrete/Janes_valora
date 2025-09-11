@@ -19,11 +19,15 @@
     Vary = "Accept-Encoding"
     X-Content-Type-Options = "nosniff"
     Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    X-Frame-Options = "SAMEORIGIN"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
 
-    # 🔒 CSP ajustada y unificada (permite Firebase + Cloudinary)
+    # 🔒 CSP ajustada y unificada (permite Firebase, Cloudinary y tu dominio propio)
     Content-Security-Policy = """
       default-src 'self';
-      img-src 'self' data: https://res.cloudinary.com https://firebasestorage.googleapis.com;
+      img-src 'self' https://janesenginyeria.netlify.app data: https://res.cloudinary.com https://firebasestorage.googleapis.com;
       media-src 'self' https://res.cloudinary.com;
       script-src 'self' https://www.gstatic.com;
       connect-src 'self' https://firestore.googleapis.com https://www.googleapis.com https://www.gstatic.com https://api.cloudinary.com;
@@ -33,12 +37,8 @@
       frame-ancestors 'self';
       base-uri 'self';
       form-action 'self' https://api.cloudinary.com;
+      upgrade-insecure-requests;
     """
-
-    X-Frame-Options = "SAMEORIGIN"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-    X-XSS-Protection = "1; mode=block"
 
 # --- Cabeceras: recursos estáticos versionados ---
 [[headers]]
