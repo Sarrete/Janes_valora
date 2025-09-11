@@ -1,3 +1,6 @@
+[build]
+  publish = "."
+  functions = "functions"
 # --- Redirecciones ---
 [[redirects]]
   from = "http://*"
@@ -69,3 +72,4 @@
     sitemapPath = "/sitemap.xml"
     ignorePeriod = 3600 # 1 hora
     providers = [ "google", "yandex" ]
+
