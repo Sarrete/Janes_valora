@@ -5,7 +5,7 @@ import {
   query, where, orderBy, onSnapshot
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// CONFIGURACIÓN FIREBASE
+// CONFIGURACIÓN FIREBASE (pública, no es secreta)
 const firebaseConfig = {
   apiKey: "AIzaSyCCOHmdAFNnENTFDuZIw4kb51NqfXA12DA",
   authDomain: "valoraciones-a8350.firebaseapp.com",
@@ -46,6 +46,14 @@ function contieneCodigoPeligroso(texto) {
   return patron.test(texto);
 }
 
+// Helper para convertir archivo a base64
+const toBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = (error) => reject(error);
+});
+
 // ENVÍO FORMULARIO
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -62,13 +70,14 @@ form.addEventListener('submit', async (e) => {
   try {
     let photoURL = null;
     if (photoFile) {
-      const data = new FormData();
-      data.append("file", photoFile);
-      data.append("upload_preset", "valoraciones_janes");
-      data.append("folder", "valoraciones");
-      const res = await fetch("https://api.cloudinary.com/v1_1/dcsez2e0d/image/upload", { method: "POST", body: data });
+      // Convertir a base64 y enviar a la función serverless
+      const base64File = await toBase64(photoFile);
+      const res = await fetch('/.netlify/functions/upload-image', {
+        method: 'POST',
+        body: JSON.stringify({ file: base64File })
+      });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error?.message || 'Error subiendo imagen');
+      if (!res.ok) throw new Error(json.error || 'Error subiendo imagen');
       photoURL = json.secure_url;
     }
 
