@@ -27,7 +27,7 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-    Content-Security-Policy = "default-src 'self'; img-src 'self' https://janesenginyeria.netlify.app data: https://res.cloudinary.com https://firebasestorage.googleapis.com; media-src 'self' https://res.cloudinary.com; script-src 'self' https://www.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' https://firestore.googleapis.com https://www.googleapis.com https://www.gstatic.com https://api.cloudinary.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; object-src 'none'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://api.cloudinary.com; upgrade-insecure-requests;"
+    Content-Security-Policy = "default-src 'self'; img-src 'self' https://janesenginyeria.netlify.app data: https://res.cloudinary.com https://firebasestorage.googleapis.com; media-src 'self' https://res.cloudinary.com; script-src 'self' https://www.gstatic.com https://cdn.jsdelivr.net; connect-src 'self' https://firestore.googleapis.com https://www.googleapis.com https://www.gstatic.com https://api.cloudinary.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; object-src 'none'; frame-ancestors 'self'; base-uri 'self'; form-action 'self' https://api.cloudinary.com; upgrade-insecure-requests;"
 
 # --- Cabeceras: recursos estáticos versionados ---
 [[headers]]
