@@ -23,7 +23,7 @@ exports.handler = async (event) => {
       };
     }
 
-    // Leer todas las credenciales de entorno
+    // Leer credenciales de entorno
     const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, NOTIFY_EMAIL } = process.env;
 
     if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !NOTIFY_EMAIL) {
@@ -65,22 +65,11 @@ exports.handler = async (event) => {
     };
 
   } catch (err) {
-    console.error('Error enviando correo:', err);
-    // Bloque de depuración
+    console.error('Error enviando correo:', err); // Solo se ve en logs de Netlify
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        error: err.message,
-        stack: err.stack,
-        env: {
-          SMTP_HOST: process.env.SMTP_HOST,
-          SMTP_PORT: process.env.SMTP_PORT,
-          SMTP_USER: process.env.SMTP_USER,
-          NOTIFY_EMAIL: process.env.NOTIFY_EMAIL
-        }
-      })
+      body: JSON.stringify({ error: 'Error interno del servidor' })
     };
   }
 };
-
