@@ -1,33 +1,52 @@
 // functions/send-email.js
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
 
-export async function handler(event) {
+exports.handler = async (event) => {
   try {
+    // Aceptar solo POST
     if (event.httpMethod !== 'POST') {
-      return { statusCode: 405, body: 'Method Not Allowed' };
+      return {
+        statusCode: 405,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Method Not Allowed' })
+      };
     }
 
+    // Parseo seguro del body
     const { nombre, comentario, rating } = JSON.parse(event.body || '{}');
 
+    // Validaciones mínimas
     if (!nombre || !comentario || !rating) {
-      return { statusCode: 400, body: JSON.stringify({ error: 'Faltan datos' }) };
+      return {
+        statusCode: 400,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Faltan datos' })
+      };
     }
 
-    // Configuración SMTP
+    // Comprobación de variables de entorno necesarias
+    const { SMTP_HOST, SMTP_USER, SMTP_PASS, NOTIFY_EMAIL } = process.env;
+    if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !NOTIFY_EMAIL) {
+      return {
+        statusCode: 500,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ error: 'Faltan variables de entorno SMTP/NOTIFY_EMAIL' })
+      };
+    }
+
+    // Crear transporter SMTP
     const transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: 465,
-      secure: true,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS
-      }
+      host: SMTP_HOST,          // p.ej. smtp.gmail.com
+      port: 465,                // 465 SSL
+      secure: true,             // true para 465
+      auth: { user: SMTP_USER, pass: SMTP_PASS }
+      // Si tu proveedor requiere configuraciones TLS especiales, añade aquí tls: { ... }
     });
 
     // Enviar correo
     await transporter.sendMail({
-      from: `"Valoraciones Web" <${process.env.SMTP_USER}>`,
-      to: process.env.NOTIFY_EMAIL,
+      from: `"Valoraciones Web" <${SMTP_USER}>`,
+      to: NOTIFY_EMAIL,
       subject: 'Nueva valoración recibida',
       html: `
         <h2>Nueva valoración</h2>
@@ -37,9 +56,17 @@ export async function handler(event) {
       `
     });
 
-    return { statusCode: 200, body: JSON.stringify({ success: true }) };
-
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ success: true })
+    };
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    console.error('Error enviando correo:', err);
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: err.message })
+    };
   }
-}
+};
