@@ -3,7 +3,7 @@ const nodemailer = require('nodemailer');
 
 exports.handler = async (event) => {
   try {
-    // Aceptar solo POST
+    // Solo aceptar POST
     if (event.httpMethod !== 'POST') {
       return {
         statusCode: 405,
@@ -12,10 +12,9 @@ exports.handler = async (event) => {
       };
     }
 
-    // Parseo seguro del body
+    // Parsear datos del body
     const { nombre, comentario, rating } = JSON.parse(event.body || '{}');
 
-    // Validaciones mínimas
     if (!nombre || !comentario || !rating) {
       return {
         statusCode: 400,
@@ -24,23 +23,26 @@ exports.handler = async (event) => {
       };
     }
 
-    // Comprobación de variables de entorno necesarias
-    const { SMTP_HOST, SMTP_USER, SMTP_PASS, NOTIFY_EMAIL } = process.env;
-    if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !NOTIFY_EMAIL) {
+    // Leer todas las credenciales de entorno
+    const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, NOTIFY_EMAIL } = process.env;
+
+    if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASS || !NOTIFY_EMAIL) {
       return {
         statusCode: 500,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ error: 'Faltan variables de entorno SMTP/NOTIFY_EMAIL' })
+        body: JSON.stringify({ error: 'Faltan variables de entorno' })
       };
     }
 
-    // Crear transporter SMTP
+    // Configuración del transporte SMTP
     const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,          // p.ej. smtp.gmail.com
-      port: 465,                // 465 SSL
-      secure: true,             // true para 465
-      auth: { user: SMTP_USER, pass: SMTP_PASS }
-      // Si tu proveedor requiere configuraciones TLS especiales, añade aquí tls: { ... }
+      host: SMTP_HOST,
+      port: Number(SMTP_PORT),
+      secure: Number(SMTP_PORT) === 465, // true si es 465
+      auth: {
+        user: SMTP_USER,
+        pass: SMTP_PASS
+      }
     });
 
     // Enviar correo
@@ -61,6 +63,7 @@ exports.handler = async (event) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ success: true })
     };
+
   } catch (err) {
     console.error('Error enviando correo:', err);
     return {
