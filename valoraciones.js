@@ -70,7 +70,15 @@ form.addEventListener('submit', async (e) => {
     let comment = sanitizeInput(document.getElementById('comment').value);
     const photoFile = document.getElementById('photo').files[0];
 
-    if (!name) throw new Error('Por favor, ingresa tu nombre.');
+    // 🚨 Nueva validación: avisar si DOMPurify deja vacío
+    if (!name) {
+      alert('Tu nombre está vacío o contiene contenido no permitido. Por favor, revisa e inténtalo de nuevo.');
+      throw new Error();
+    }
+    if (!comment) {
+      alert('Tu comentario está vacío o contiene contenido no permitido. Por favor, revisa e inténtalo de nuevo.');
+      throw new Error();
+    }
     if (currentRating === 0) throw new Error('Por favor, selecciona una valoración.');
 
     // Validación de imagen en cliente
@@ -100,23 +108,23 @@ form.addEventListener('submit', async (e) => {
       photoURL = json.secure_url;
     }
 
-    // 1️⃣ Guardar en Firestore
+    // Guardar en Firestore
     await addDoc(collection(db, 'valoraciones'), {
       nombre: name,
-      comentario: comment || 'Sin comentario',
+      comentario: comment,
       rating: currentRating,
       photoURL: photoURL || null,
       timestamp: serverTimestamp(),
       aprobado: false
     });
 
-    // 2️⃣ Llamar a la función de Netlify para enviar el email
+    // Enviar email
     fetch('/.netlify/functions/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         nombre: name,
-        comentario: comment || 'Sin comentario',
+        comentario: comment,
         rating: currentRating
       })
     }).catch(err => console.error('Error enviando email:', err));
@@ -127,7 +135,7 @@ form.addEventListener('submit', async (e) => {
     updateStars(0);
 
   } catch (err) {
-    alert(err.message || 'Error al enviar la valoración');
+    if (err.message) alert(err.message);
   } finally {
     isSubmitting = false;
     submitBtn.disabled = false;
