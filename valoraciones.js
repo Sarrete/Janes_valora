@@ -1,6 +1,7 @@
 // IMPORTS FIREBASE
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 // CONFIGURACIÓN FIREBASE (pública, no es secreta)
 const firebaseConfig = {
@@ -15,6 +16,16 @@ const firebaseConfig = {
 // INICIALIZAR APP Y SERVICIOS
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+// Autenticación anónima
+signInAnonymously(auth)
+  .then(() => {
+    console.log("Usuario anónimo autenticado:", auth.currentUser.uid);
+  })
+  .catch((error) => {
+    console.error("Error en autenticación anónima:", error);
+  });
 
 // ELEMENTOS DOM
 const form = document.getElementById('ratingForm');
@@ -42,7 +53,7 @@ stars.forEach((star, idx) => {
   });
 });
 
-// 🔹 Sanitizador usando DOMPurify
+// Sanitizador usando DOMPurify
 const sanitizeInput = (input) => {
   return DOMPurify.sanitize(input, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
 };
@@ -55,9 +66,23 @@ const toBase64 = (file) => new Promise((resolve, reject) => {
   reader.onerror = (error) => reject(error);
 });
 
+// Limitación básica en cliente (1 envío cada X minutos por navegador)
+const LAST_REVIEW_KEY = 'lastReviewTime';
+const LIMIT_MINUTES = 5;
+
 // ENVÍO FORMULARIO
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+
+  // Throttle por navegador
+  const lastTime = localStorage.getItem(LAST_REVIEW_KEY);
+  const now = Date.now();
+  if (lastTime && now - parseInt(lastTime, 10) < LIMIT_MINUTES * 60 * 1000) {
+    const remaining = Math.ceil((LIMIT_MINUTES * 60 * 1000 - (now - parseInt(lastTime, 10))) / 60000);
+    alert(`Solo puedes enviar una valoración cada ${LIMIT_MINUTES} minutos. Vuelve a intentarlo en ~${remaining} minuto(s).`);
+    return;
+  }
+
   if (isSubmitting) return;
   isSubmitting = true;
 
@@ -70,7 +95,7 @@ form.addEventListener('submit', async (e) => {
     let comment = sanitizeInput(document.getElementById('comment').value);
     const photoFile = document.getElementById('photo').files[0];
 
-    // 🚨 Nueva validación: avisar si DOMPurify deja vacío
+    // Validaciones post-sanitización
     if (!name) {
       alert('Tu nombre está vacío o contiene contenido no permitido. Por favor, revisa e inténtalo de nuevo.');
       throw new Error();
@@ -93,6 +118,7 @@ form.addEventListener('submit', async (e) => {
       }
     }
 
+    // Subida opcional de imagen
     let photoURL = null;
     if (photoFile) {
       const base64File = await toBase64(photoFile);
@@ -108,8 +134,14 @@ form.addEventListener('submit', async (e) => {
       photoURL = json.secure_url;
     }
 
-    // Guardar en Firestore
+    // Asegurar UID (por si aún no está listo)
+    if (!auth.currentUser) {
+      await signInAnonymously(auth).catch(() => {});
+    }
+
+    // Guardar en Firestore con UID
     await addDoc(collection(db, 'valoraciones'), {
+      uid: auth.currentUser ? auth.currentUser.uid : null,
       nombre: name,
       comentario: comment,
       rating: currentRating,
@@ -118,7 +150,10 @@ form.addEventListener('submit', async (e) => {
       aprobado: false
     });
 
-    // Enviar email
+    // Guardar timestamp local de último envío (throttle)
+    localStorage.setItem(LAST_REVIEW_KEY, String(Date.now()));
+
+    // Enviar email (best-effort)
     fetch('/.netlify/functions/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -135,7 +170,7 @@ form.addEventListener('submit', async (e) => {
     updateStars(0);
 
   } catch (err) {
-    if (err.message) alert(err.message);
+    if (err && err.message) alert(err.message);
   } finally {
     isSubmitting = false;
     submitBtn.disabled = false;
@@ -143,7 +178,7 @@ form.addEventListener('submit', async (e) => {
   }
 });
 
-// ESCUCHA EN TIEMPO REAL
+// ESCUCHA EN TIEMPO REAL (solo aprobadas)
 const q = query(
   collection(db, 'valoraciones'),
   where('aprobado', '==', true),
@@ -187,6 +222,7 @@ document.addEventListener('translationsLoaded', () => {
 function renderReviews() {
   reviewsContainer.innerHTML = "";
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
+
   lista.forEach((r) => {
     const div = document.createElement("div");
     div.classList.add("review-card");
@@ -232,7 +268,9 @@ function renderReviews() {
   });
 
   // Botón global
-  verTodasBtn.textContent = mostrandoTodas ? tr('reviews.viewAllLess') : tr('reviews.viewAll');
+  if (verTodasBtn) {
+    verTodasBtn.textContent = mostrandoTodas ? tr('reviews.viewAllLess') : tr('reviews.viewAll');
+  }
 }
 
 // BOTÓN GLOBAL "VER TODAS"
