@@ -1,17 +1,6 @@
 // IMPORTS FIREBASE
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  serverTimestamp,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  setDoc,
-  doc
-} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 // CONFIGURACIÓN FIREBASE (pública, no es secreta)
@@ -160,12 +149,6 @@ form.addEventListener('submit', async (e) => {
       timestamp: serverTimestamp(),
       aprobado: false
     });
-
-    // Actualizar documento de última valoración del usuario (para reglas de tiempo)
-    await setDoc(
-      doc(db, 'usuarios', auth.currentUser.uid, 'ultimaValoracion', 'data'),
-      { timestamp: serverTimestamp() }
-    );
 
     // Guardar timestamp local de último envío (throttle)
     localStorage.setItem(LAST_REVIEW_KEY, String(Date.now()));
