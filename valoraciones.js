@@ -42,11 +42,10 @@ stars.forEach((star, idx) => {
   });
 });
 
-// SEGURIDAD
-function contieneCodigoPeligroso(texto) {
-  const patron = /<\s*script|onerror\s*=|onload\s*=|javascript:|<\s*iframe|<\s*img|<\s*svg/i;
-  return patron.test(texto);
-}
+// 🔹 Sanitizador usando DOMPurify
+const sanitizeInput = (input) => {
+  return DOMPurify.sanitize(input, { ALLOWED_TAGS: [], ALLOWED_ATTR: [] }).trim();
+};
 
 // Helper para convertir archivo a base64
 const toBase64 = (file) => new Promise((resolve, reject) => {
@@ -67,15 +66,12 @@ form.addEventListener('submit', async (e) => {
   submitBtn.textContent = 'Enviando...';
 
   try {
-    const name = document.getElementById('name').value.trim();
-    const comment = document.getElementById('comment').value.trim();
+    let name = sanitizeInput(document.getElementById('name').value);
+    let comment = sanitizeInput(document.getElementById('comment').value);
     const photoFile = document.getElementById('photo').files[0];
 
     if (!name) throw new Error('Por favor, ingresa tu nombre.');
     if (currentRating === 0) throw new Error('Por favor, selecciona una valoración.');
-    if (contieneCodigoPeligroso(name) || contieneCodigoPeligroso(comment)) {
-      throw new Error('Tu valoración contiene código o caracteres no permitidos.');
-    }
 
     // Validación de imagen en cliente
     const MAX_BYTES = 5 * 1024 * 1024; // 5MB
