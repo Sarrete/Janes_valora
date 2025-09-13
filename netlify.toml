@@ -51,11 +51,11 @@
     Content-Type = "application/xml"
     Vary = "Accept-Encoding"
 
-# --- Plugins ---
-[[plugins]]
-  package = "netlify-plugin-submit-sitemap"
-  [plugins.inputs]
-    baseUrl = "https://clever-malabi-a1eea4.netlify.app"
-    sitemapPath = "/sitemap.xml"
-    ignorePeriod = 3600 # 1 hora
-    providers = [ "google", "yandex" ]
+# --- Plugins (desactivado temporalmente) ---
+# [[plugins]]
+#   package = "netlify-plugin-submit-sitemap"
+#   [plugins.inputs]
+#     baseUrl = "https://clever-malabi-a1eea4.netlify.app"
+#     sitemapPath = "/sitemap.xml"
+#     ignorePeriod = 3600 # 1 hora
+#     providers = [ "google", "yandex" ]
