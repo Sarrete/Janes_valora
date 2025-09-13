@@ -1,6 +1,8 @@
 // IMPORTS FIREBASE
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { 
+  getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot, getDocs // 🔹 añadido getDocs
+} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 // CONFIGURACIÓN FIREBASE (pública, no es secreta)
@@ -137,6 +139,19 @@ form.addEventListener('submit', async (e) => {
     // Asegurar UID (por si aún no está listo)
     if (!auth.currentUser) {
       await signInAnonymously(auth).catch(() => {});
+    }
+
+    // 🔹 Validación extra en Firestore: evitar envíos recientes del mismo usuario
+    const cincoMinutosAtras = new Date(Date.now() - LIMIT_MINUTES * 60 * 1000);
+    const qCheck = query(
+      collection(db, 'valoraciones'),
+      where('uid', '==', auth.currentUser.uid),
+      where('timestamp', '>', cincoMinutosAtras)
+    );
+    const snapshot = await getDocs(qCheck);
+    if (!snapshot.empty) {
+      alert(`Ya has enviado una valoración en los últimos ${LIMIT_MINUTES} minutos. Por favor, espera antes de enviar otra.`);
+      throw new Error('Valoración duplicada en poco tiempo');
     }
 
     // Guardar en Firestore con UID
