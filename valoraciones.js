@@ -97,29 +97,21 @@ form.addEventListener('submit', async (e) => {
     let comment = sanitizeInput(document.getElementById('comment').value);
     const photoFile = document.getElementById('photo').files[0];
 
-    // Validaciones post-sanitización
     if (!name) throw new Error('Tu nombre está vacío o contiene contenido no permitido.');
     if (!comment) throw new Error('Tu comentario está vacío o contiene contenido no permitido.');
     if (currentRating === 0) throw new Error('Por favor, selecciona una valoración.');
 
-    // 🔹 Forzar rating a número entero
     const ratingInt = parseInt(currentRating, 10);
     console.log("Tipo de rating:", typeof ratingInt, ratingInt);
 
-    // Validación de imagen en cliente
-    const MAX_BYTES = 5 * 1024 * 1024; // 5MB
+    const MAX_BYTES = 5 * 1024 * 1024;
     const ALLOWED = ['image/jpeg', 'image/png', 'image/webp'];
     if (photoFile) {
-      if (!ALLOWED.includes(photoFile.type)) {
-        throw new Error('Formato no permitido. Usa JPG, PNG o WEBP.');
-      }
-      if (photoFile.size > MAX_BYTES) {
-        throw new Error('La imagen es demasiado grande (máx 5MB).');
-      }
+      if (!ALLOWED.includes(photoFile.type)) throw new Error('Formato no permitido. Usa JPG, PNG o WEBP.');
+      if (photoFile.size > MAX_BYTES) throw new Error('La imagen es demasiado grande (máx 5MB).');
     }
 
-    // Subida opcional de imagen
-    let photoURL = null;
+    let photoURL;
     if (photoFile) {
       const base64File = await toBase64(photoFile);
       const res = await fetch('/.netlify/functions/upload-image', {
@@ -128,18 +120,19 @@ form.addEventListener('submit', async (e) => {
         body: JSON.stringify({ file: base64File })
       });
       const json = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(json.error || `Error subiendo imagen (HTTP ${res.status})`);
+      if (!res.ok) throw new Error(json.error || `Error subiendo imagen (HTTP ${res.status})`);
+      if (/^https:\/\/res\.cloudinary\.com\/\S+$/.test(json.secure_url)) {
+        photoURL = json.secure_url;
+      } else {
+        throw new Error('La URL de la imagen no cumple el patrón permitido.');
       }
-      photoURL = json.secure_url;
     }
 
-    // Asegurar UID (por si aún no está listo)
+    // Esperar a que auth.currentUser esté listo
     if (!auth.currentUser) {
-      await signInAnonymously(auth).catch(() => {});
+      await signInAnonymously(auth);
     }
 
-    // 🔹 Validación extra en Firestore: evitar envíos recientes del mismo usuario
     const cincoMinutosAtras = new Date(Date.now() - LIMIT_MINUTES * 60 * 1000);
     const qCheck = query(
       collection(db, 'valoraciones'),
@@ -148,45 +141,28 @@ form.addEventListener('submit', async (e) => {
     );
     const snapshot = await getDocs(qCheck);
     if (!snapshot.empty) {
-      alert(`Ya has enviado una valoración en los últimos ${LIMIT_MINUTES} minutos. Por favor, espera antes de enviar otra.`);
+      alert(`Ya has enviado una valoración en los últimos ${LIMIT_MINUTES} minutos.`);
       throw new Error('Valoración duplicada en poco tiempo');
     }
 
-    // 🔍 Log de depuración antes de enviar
-console.log("Datos a enviar:", {
-  uid: auth.currentUser ? auth.currentUser.uid : null,
-  nombre: name,
-  comentario: comment,
-  rating: ratingInt,
-  photoURL: photoURL || null,
-  timestamp: "[serverTimestamp()]",
-  aprobado: false
-}, {
-  tipos: {
-    uid: typeof (auth.currentUser ? auth.currentUser.uid : null),
-    nombre: typeof name,
-    comentario: typeof comment,
-    rating: typeof ratingInt,
-    photoURL: typeof (photoURL || null),
-    aprobado: typeof false
-  }
-});
-    
-    // Guardar en Firestore con UID
-    await addDoc(collection(db, 'valoraciones'), {
-      uid: auth.currentUser ? auth.currentUser.uid : null,
+    // Log completo antes de enviar
+    const data = {
+      uid: auth.currentUser.uid,
       nombre: name,
       comentario: comment,
-      rating: ratingInt, // 🔹 ahora siempre es int
-      photoURL: photoURL || null,
+      rating: ratingInt,
+      ...(photoURL ? { photoURL } : {}),
       timestamp: serverTimestamp(),
       aprobado: false
+    };
+    console.log("Datos a enviar:", data, {
+      tipos: Object.fromEntries(Object.entries(data).map(([k, v]) => [k, typeof v]))
     });
 
-    // Guardar timestamp local de último envío (throttle)
+    await addDoc(collection(db, 'valoraciones'), data);
+
     localStorage.setItem(LAST_REVIEW_KEY, String(Date.now()));
 
-    // Enviar email (best-effort)
     fetch('/.netlify/functions/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -238,7 +214,6 @@ onSnapshot(q, (snapshot) => {
   renderReviews();
 });
 
-// Función de traducción usando window.translations
 function tr(key) {
   if (window.translations && window.translations[key]) {
     return window.translations[key];
@@ -246,17 +221,15 @@ function tr(key) {
   return key;
 }
 
-// Escuchar cuando script.js cargue las traducciones
 document.addEventListener('translationsLoaded', () => {
   renderReviews();
 });
 
-// RENDER DE RESEÑAS
 function renderReviews() {
   reviewsContainer.innerHTML = "";
   const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
 
-  lista.forEach((r) => {
+   lista.forEach((r) => {
     const div = document.createElement("div");
     div.classList.add("review-card");
 
