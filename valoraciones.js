@@ -1,7 +1,7 @@
 // IMPORTS FIREBASE
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { 
-  getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot, getDocs // 🔹 añadido getDocs
+  getFirestore, collection, addDoc, serverTimestamp, query, where, orderBy, onSnapshot, getDocs 
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
@@ -98,15 +98,13 @@ form.addEventListener('submit', async (e) => {
     const photoFile = document.getElementById('photo').files[0];
 
     // Validaciones post-sanitización
-    if (!name) {
-      alert('Tu nombre está vacío o contiene contenido no permitido. Por favor, revisa e inténtalo de nuevo.');
-      throw new Error();
-    }
-    if (!comment) {
-      alert('Tu comentario está vacío o contiene contenido no permitido. Por favor, revisa e inténtalo de nuevo.');
-      throw new Error();
-    }
+    if (!name) throw new Error('Tu nombre está vacío o contiene contenido no permitido.');
+    if (!comment) throw new Error('Tu comentario está vacío o contiene contenido no permitido.');
     if (currentRating === 0) throw new Error('Por favor, selecciona una valoración.');
+
+    // 🔹 Forzar rating a número entero
+    const ratingInt = parseInt(currentRating, 10);
+    console.log("Tipo de rating:", typeof ratingInt, ratingInt);
 
     // Validación de imagen en cliente
     const MAX_BYTES = 5 * 1024 * 1024; // 5MB
@@ -159,7 +157,7 @@ form.addEventListener('submit', async (e) => {
       uid: auth.currentUser ? auth.currentUser.uid : null,
       nombre: name,
       comentario: comment,
-      rating: currentRating,
+      rating: ratingInt, // 🔹 ahora siempre es int
       photoURL: photoURL || null,
       timestamp: serverTimestamp(),
       aprobado: false
@@ -175,7 +173,7 @@ form.addEventListener('submit', async (e) => {
       body: JSON.stringify({
         nombre: name,
         comentario: comment,
-        rating: currentRating
+        rating: ratingInt
       })
     }).catch(err => console.error('Error enviando email:', err));
 
