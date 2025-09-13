@@ -207,4 +207,94 @@ let mostrandoTodas = false;
 
 onSnapshot(q, (snapshot) => {
   const nuevas = [];
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if (!data?.nombre || typeof data.rating !== 'number') return;
+    nuevas.push({
+      nombre: data.nombre,
+      comentario: data.comentario || 'Sin comentario',
+      rating: data.rating,
+      photoURL: data.photoURL || null,
+      expanded: false
+    });
+  });
+  todasLasReseñas = nuevas;
+  renderReviews();
+});
+
+// Función de traducción usando window.translations
+function tr(key) {
+  if (window.translations && window.translations[key]) {
+    return window.translations[key];
+  }
+  return key;
+}
+
+// Escuchar cuando script.js cargue las traducciones
+document.addEventListener('translationsLoaded', () => {
+  renderReviews();
+});
+
+// RENDER DE RESEÑAS
+function renderReviews() {
+  reviewsContainer.innerHTML = "";
+  const lista = mostrandoTodas ? todasLasReseñas : todasLasReseñas.slice(0, 3);
+
+  lista.forEach((r) => {
+    const div = document.createElement("div");
+    div.classList.add("review-card");
+
+    const comentarioSeguro = String(r.comentario || tr('reviews.noComment'));
+    const textoCorto = comentarioSeguro.length > 120 ? comentarioSeguro.slice(0, 120) + "..." : comentarioSeguro;
+
+    const h3 = document.createElement("h3");
+    h3.textContent = r.nombre;
+    div.appendChild(h3);
+
+    const starsP = document.createElement("p");
+    starsP.classList.add("stars-display");
+    starsP.textContent = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+    div.appendChild(starsP);
+
+    const p = document.createElement("p");
+    p.classList.add("review-text");
+    p.textContent = r.expanded ? comentarioSeguro : textoCorto;
+    div.appendChild(p);
+
+    if (comentarioSeguro.length > 120) {
+      const btnVerMas = document.createElement("button");
+      btnVerMas.classList.add("ver-mas");
+      btnVerMas.type = "button";
+      btnVerMas.innerText = r.expanded ? tr('reviews.viewLess') : tr('reviews.viewMore');
+      btnVerMas.addEventListener("click", () => {
+        r.expanded = !r.expanded;
+        renderReviews();
+      });
+      div.appendChild(btnVerMas);
+    }
+
+    if (r.photoURL) {
+      const img = document.createElement("img");
+      img.src = r.photoURL;
+      img.alt = tr('reviews.photoAlt');
+      img.loading = "lazy";
+      div.appendChild(img);
+    }
+
+    reviewsContainer.appendChild(div);
+  });
+
+  // Botón global
+  if (verTodasBtn) {
+    verTodasBtn.textContent = mostrandoTodas ? tr('reviews.viewAllLess') : tr('reviews.viewAll');
+  }
+}
+
+// BOTÓN GLOBAL "VER TODAS"
+if (verTodasBtn) {
+  verTodasBtn.addEventListener("click", () => {
+    mostrandoTodas = !mostrandoTodas;
+    renderReviews();
+  });
+}
  
