@@ -152,6 +152,26 @@ form.addEventListener('submit', async (e) => {
       throw new Error('Valoración duplicada en poco tiempo');
     }
 
+    // 🔍 Log de depuración antes de enviar
+console.log("Datos a enviar:", {
+  uid: auth.currentUser ? auth.currentUser.uid : null,
+  nombre: name,
+  comentario: comment,
+  rating: ratingInt,
+  photoURL: photoURL || null,
+  timestamp: "[serverTimestamp()]",
+  aprobado: false
+}, {
+  tipos: {
+    uid: typeof (auth.currentUser ? auth.currentUser.uid : null),
+    nombre: typeof name,
+    comentario: typeof comment,
+    rating: typeof ratingInt,
+    photoURL: typeof (photoURL || null),
+    aprobado: typeof false
+  }
+});
+    
     // Guardar en Firestore con UID
     await addDoc(collection(db, 'valoraciones'), {
       uid: auth.currentUser ? auth.currentUser.uid : null,
