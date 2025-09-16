@@ -7,7 +7,7 @@ import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/1
 
 // CONFIGURACIÓN FIREBASE
 const firebaseConfig = {
-  apiKey: "AIzaSyCCOHmdAFNnENTFDuZIw4kb51NqfXA12DA",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: "valoraciones-a8350.firebaseapp.com",
   projectId: "valoraciones-a8350",
   storageBucket: "valoraciones-a8350.appspot.com",
