@@ -2,6 +2,9 @@
   publish = "."
   functions = "functions"
 
+[build.environment]
+  SECRETS_SCAN_OMIT_PATHS = "valoraciones.js"
+
 # --- Redirecciones ---
 [[redirects]]
   from = "http://*"
@@ -59,3 +62,4 @@
 #     sitemapPath = "/sitemap.xml"
 #     ignorePeriod = 3600 # 1 hora
 #     providers = [ "google", "yandex" ]
+
